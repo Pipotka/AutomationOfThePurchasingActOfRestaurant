@@ -3,14 +3,14 @@
 namespace AutomationOfThePurchasingActOfRestaurant.Models
 {
     /// <summary>
-    /// Утверждающий
+    /// Сотрудник
     /// </summary>
-    public class Approver
+    public class Employee
     {
         /// <summary>
         /// Id
         /// </summary>
-        public Guid ApproverId { get; set; }
+        public Guid EmployeeId { get; set; } = Guid.NewGuid();
         /// <summary>
         /// Имя
         /// </summary>
@@ -34,17 +34,11 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         [Required(ErrorMessage = "Должность не указана")]
         [Display(Name = "Должность")]
         public EmployeePosition Position { get; set; }
-        /// <summary>
-        /// <inheritdoc cref="Models.Signature" path="/summary"/>
-        /// </summary>
-        [Required(ErrorMessage = "Отсутствует подпись")]
-        [Display(Name = "Подпись")]
-        public Signature Signature { get; set; }
 
         /// <summary>
-        /// Пустой конструктор <see cref="Approver"/>
+        /// Пустой конструктор <see cref="Employee"/>
         /// </summary>
-        public Approver() { }
+        public Employee() { }
 
         /// <summary>
         /// Конструктор <see cref="Employee"/>
@@ -61,7 +55,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <param name="patronymic">
         /// <inheritdoc cref="Patronymic" path="/summary"/>
         /// </param>
-        public Approver(EmployeePosition position, Signature signature, string firstName, string lastName,
+        public Employee(EmployeePosition position, string firstName, string lastName,
             string? patronymic = null)
         {
             patronymic ??= string.Empty;
@@ -70,7 +64,6 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
             LastName = lastName;
             Patronymic = patronymic;
             Position = position;
-            Signature = new Signature(signature);
         }
     }
 }

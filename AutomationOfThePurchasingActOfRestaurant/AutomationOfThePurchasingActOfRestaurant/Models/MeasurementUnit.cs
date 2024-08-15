@@ -5,8 +5,12 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
     /// <summary>
     /// Единица измерения
     /// </summary>
-    public struct MeasurementUnit
+    public class MeasurementUnit
     {
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid MeasurementUnitId { get; set; } = Guid.NewGuid();
         /// <summary>
         /// Наибольший код по ОКЕИ
         /// </summary>
@@ -14,14 +18,21 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Наименование единицы измерения
         /// </summary>
-        [Required]
-        public string Name;
+        [Required(ErrorMessage = "Наименование единицы измерения не указано")]
+        [Display(Name = "Наименование единицы измерения")]
+        public string Name { get; set; }
         /// <summary>
         /// Код по ОКЕИ
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Код по ОКЕИ не указан")]
+        [Display(Name = "Код по ОКЕИ")]
         [Range(1, maxOKEIKey)]
-        public short OKEIKey;
+        public short OKEIKey { get; set; }
+
+        /// <summary>
+        /// Пустой конструктор <see cref="MeasurementUnit"/>
+        /// </summary>
+        public MeasurementUnit() { }
 
         /// <summary>
         /// Конструктор <see cref="MeasurementUnit"/>

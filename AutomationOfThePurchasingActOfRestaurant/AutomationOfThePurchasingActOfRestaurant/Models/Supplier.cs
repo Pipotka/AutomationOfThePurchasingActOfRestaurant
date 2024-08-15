@@ -3,14 +3,14 @@
 namespace AutomationOfThePurchasingActOfRestaurant.Models
 {
     /// <summary>
-    /// Утверждающий
+    /// Поставщик
     /// </summary>
-    public class Approver
+    public class Supplier
     {
         /// <summary>
         /// Id
         /// </summary>
-        public Guid ApproverId { get; set; }
+        public Guid SupplierId { get; set; } = Guid.NewGuid();
         /// <summary>
         /// Имя
         /// </summary>
@@ -28,30 +28,14 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// </summary>
         [Display(Name = "Отчество")]
         public string? Patronymic { get; set; }
-        /// <summary>
-        /// Должность
-        /// </summary>
-        [Required(ErrorMessage = "Должность не указана")]
-        [Display(Name = "Должность")]
-        public EmployeePosition Position { get; set; }
-        /// <summary>
-        /// <inheritdoc cref="Models.Signature" path="/summary"/>
-        /// </summary>
-        [Required(ErrorMessage = "Отсутствует подпись")]
-        [Display(Name = "Подпись")]
-        public Signature Signature { get; set; }
 
         /// <summary>
-        /// Пустой конструктор <see cref="Approver"/>
+        /// Пустой конструктор <see cref="Supplier"/>
         /// </summary>
-        public Approver() { }
-
+        public Supplier() { }
         /// <summary>
-        /// Конструктор <see cref="Employee"/>
+        /// Конструктор <see cref="Supplier"/>
         /// </summary>
-        /// <param name="post">
-        /// <inheritdoc cref="Position" path="/summary"/>
-        /// </param>
         /// <param name="firstName">
         /// <inheritdoc cref="FirstName" path="/summary"/>
         /// </param>
@@ -61,7 +45,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <param name="patronymic">
         /// <inheritdoc cref="Patronymic" path="/summary"/>
         /// </param>
-        public Approver(EmployeePosition position, Signature signature, string firstName, string lastName,
+        public Supplier(string firstName, string lastName,
             string? patronymic = null)
         {
             patronymic ??= string.Empty;
@@ -69,8 +53,6 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
             FirstName = firstName;
             LastName = lastName;
             Patronymic = patronymic;
-            Position = position;
-            Signature = new Signature(signature);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutomationOfThePurchasingActOfRestaurant.Models.SubModels;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace AutomationOfThePurchasingActOfRestaurant.Models
 {
@@ -9,43 +8,72 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
     public class FormKey
     {
         /// <summary>
-        /// <inheritdoc cref="FormAccordingToOKUD" path="/summary"/>
+        /// Id
         /// </summary>
-        [Required]
-        public FormAccordingToOKUD OKUD;
+        public Guid FormKeyId { get; set; } = Guid.NewGuid();
         /// <summary>
-        /// <inheritdoc cref="OKPOKey" path="/summary"/>
+        /// Длина <see cref="OKUD"/>
         /// </summary>
-        [Required]
-        public OKPOKey OKPO;
+        private const int lengthOfTheOKUD = 8;
         /// <summary>
-        /// <inheritdoc cref="TaxpayerIdentificationNumber" path="/summary"/>
+        /// ОКУД(Общероссийский классификатор управленческой документации)
         /// </summary>
-        [Required]
-        public TaxpayerIdentificationNumber TIN;
+        [Required(ErrorMessage = "ОКУД не указан")]
+        [Display(Name = "ОКУД")]
+        [Length(maximumLength: lengthOfTheOKUD,
+            minimumLength: lengthOfTheOKUD)]
+        public string OKUD { get; set; }
+        /// <summary>
+        /// Длина <see cref="OKPO"/>
+        /// </summary>
+        private const int lengthOfTheOKPO = 8;
+        /// <summary>
+        /// ОКПО юридического лица(Общероссийский классификатор предприятий и организаций)
+        /// </summary>
+        [Required(ErrorMessage = "ОКПО не указан")]
+        [Display(Name = "ОКПО")]
+        [Length(minimumLength: lengthOfTheOKPO, maximumLength: lengthOfTheOKPO)]
+        public string OKPO { get; set; }
+        /// <summary>
+        /// Длина <see cref="TIN"/>
+        /// </summary>
+        private const int lengthOfTheTIN = 10;
+        /// <summary>
+        /// ИНН(Идентификационный номер налогоплательщика)
+        /// </summary>
+        [Required(ErrorMessage = "ИНН не указан")]
+        [Display(Name = "ИНН")]
+        [Length(minimumLength: lengthOfTheTIN, maximumLength: lengthOfTheTIN)]
+        public string TIN { get; set; }
         /// <summary>
         /// ОКДП (Общероссийский классификатор видов экономической деятельности, продукции и услуг)
         /// </summary>
-        [Required]
-        public string OKDP;
+        [Required(ErrorMessage = "ОКДП не указан")]
+        [Display(Name = "ОКДП")]
+        public string OKDP { get; set; }
+
+        /// <summary>
+        /// Пустой конструктор <see cref="FormKey"/>
+        /// </summary>
+        public FormKey() { }
 
         /// <summary>
         /// Конструктор <see cref="FormKey"/>
         /// </summary>
         /// <param name="OKUD">
-        /// <inheritdoc cref="FormAccordingToOKUD" path="/summary"/>
+        /// <inheritdoc cref="OKUD" path="/summary"/>
         /// </param>
         /// <param name="OKPO">
-        /// <inheritdoc cref="OKPOKey" path="/summary"/>
+        /// <inheritdoc cref="OKPO" path="/summary"/>
         /// </param>
         /// <param name="TIN">
-        /// <inheritdoc cref="TaxpayerIdentificationNumber" path="/summary"/>
+        /// <inheritdoc cref="TIN" path="/summary"/>
         /// </param>
         /// <param name="OKDP">
         /// <inheritdoc cref="OKDP" path="/summary"/>
         /// </param>
-        public FormKey(FormAccordingToOKUD OKUD, OKPOKey OKPO,
-            TaxpayerIdentificationNumber TIN, string OKDP)
+        public FormKey(string OKUD, string OKPO,
+            string TIN, string OKDP)
         {
             this.OKUD = OKUD;
             this.OKPO = OKPO;

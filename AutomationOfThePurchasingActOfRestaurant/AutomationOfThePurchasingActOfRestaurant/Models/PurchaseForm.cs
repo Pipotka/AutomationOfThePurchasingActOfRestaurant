@@ -8,70 +8,95 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
     public class PurchaseForm
     {
         /// <summary>
-        /// Id закупочного акта для базы данных
+        /// Id
         /// </summary>
-        [Required]
-        public readonly Guid Id = Guid.NewGuid();
+        public Guid PurchaseFormId { get; set; } = Guid.NewGuid();
         /// <summary>
-        /// ГОСТ Формы
+        /// <see cref="FormKey"/> Id
         /// </summary>
-        [Required]
-        public string StateStandardOfTheForm;
+        public Guid FormKeyId {  get; set; }
         /// <summary>
-        /// Код формы
+        /// <inheritdoc cref="Models.FormKey" path="/summary"/>
         /// </summary>
-        [Required]
-        public FormKey Key;
+        [Required(ErrorMessage = "Код формы не указан")]
+        [Display(Name = "Код формы")]
+        public FormKey FormKey { get; set; }
+        /// <summary>
+        /// <see cref="SponsorOrganization"/> Id
+        /// </summary>
+        public Guid SponsorOrganizationId { get; set; }
+        /// <summary>
+        /// Организация-закзчик
+        /// </summary>
+        [Required(ErrorMessage = "Организация-закзчик не указана")]
+        [Display(Name = "Организация-закзчик")]
+        public Organization SponsorOrganization { get; set; }
+        /// <summary>
+        /// <see cref="ApprovingOfficer"/> Id
+        /// </summary>
+        public Guid ApprovingOfficerId { get; set; }
+        /// <summary>
+        /// Утверждающее должностное лицо
+        /// </summary>
+        [Required(ErrorMessage = "Утверждающее должностное лицо не указано")]
+        [Display(Name = "Утверждающее должностное лицо")]
+        public Approver ApprovingOfficer { get; set; }
         /// <summary>
         /// Номер документа
         /// </summary>
-        [Required]
+        [Required(ErrorMessage = "Номер документа не указан")]
+        [Display(Name = "Номер документа")]
         [Range(1, int.MaxValue)]
-        public int DocumentNumber;
+        public int DocumentNumber { get; set; }
         /// <summary>
         /// Дата составления документа
         /// </summary>
-        [Required]
-        public DateTime DocumentDate;
+        [Required(ErrorMessage = "Дата составления документа не указана")]
+        [Display(Name = "Дата составления документа")]
+        public DateTime DocumentDate { get; set; }
         /// <summary>
         /// Место закупки
         /// </summary>
-        [Required]
-        public string AddressOfPurchase;
+        [Required(ErrorMessage = "Место закупки не указано")]
+        [Display(Name = "Место закупки")]
+        public string AddressOfPurchase { get; set; }
         /// <summary>
-        /// Организация-заказчик
+        /// <see cref="ProcurementSpecialist"/> Id
         /// </summary>
-        [Required]
-        public Organization SponsorOrganization;
+        public Guid ProcurementSpecialistId { get; set; }
         /// <summary>
-        /// Утверждающий сотрудник
+        /// Специалист по закупкам
         /// </summary>
-        [Required]
-        public Approver ApprovingOfficer;
+        [Required(ErrorMessage = "Специалист по закупкам не указан")]
+        [Display(Name = "Специалист по закупкам")]
+        public Employee ProcurementSpecialist { get; set; }
         /// <summary>
-        /// Специалист по закупке
+        /// <see cref="Salesman"/> Id
         /// </summary>
-        [Required]
-        public Specialist ProcurementSpecialist;
+        public Guid SalesmanId { get; set; }
         /// <summary>
-        /// Продавец
+        /// <inheritdoc cref="Models.Supplier" path="/summary"/>
         /// </summary>
-        [Required]
-        public Human Salesman;
+        [Required(ErrorMessage = "Поставщик не указан")]
+        [Display(Name = "Поставщик")]
+        public Supplier Salesman { get; set; }
         /// <summary>
         /// Закупленные товары
         /// </summary>
-        [Required]
-        public List<Merchandise> PurchasedMerchandises;
+        [Required(ErrorMessage = "Закупленные товары не указаны")]
+        [Display(Name = "Закупленные товары")]
+        public ICollection<Merchandise> PurchasedMerchandises {  get; set; }
+
+        /// <summary>
+        /// Пустой конструктор <see cref="PurchaseForm"/>
+        /// </summary>
+        public PurchaseForm() { }
 
         /// <summary>
         /// Конструктор <see cref="PurchaseForm"/>
         /// </summary>
-        /// <param name="stateStandardOfTheForm">
-        /// <inheritdoc cref="StateStandardOfTheForm" path="/summary"/>
-        /// </param>
-        /// <param name="key">
-        /// <inheritdoc cref="Key" path="/summary"/>
+        /// <param name="formKey">
+        /// <inheritdoc cref="FormKey" path="/summary"/>
         /// </param>
         /// <param name="documentNumber">
         /// <inheritdoc cref="DocumentNumber" path="/summary"/>
@@ -86,7 +111,8 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <inheritdoc cref="SponsorOrganization" path="/summary"/>
         /// </param>
         /// <param name="approvingOfficer">
-        /// <inheritdoc cref="ApprovingOfficer" path="/summary"/>
+        /// <see cref="Employee"/> со свойством <see cref="Employee.Signature"/>
+        ///  не равным <c>null</c>
         /// </param>
         /// <param name="procurementSpecialist">
         /// <inheritdoc cref="ProcurementSpecialist" path="/summary"/>
@@ -97,14 +123,13 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <param name="purchasedMerchandises">
         /// <inheritdoc cref="PurchasedMerchandises" path="/summary"/>
         /// </param>
-        public PurchaseForm(string stateStandardOfTheForm, FormKey key,
-            int documentNumber, DateTime documentDate, string addressOfPurchase,
+        public PurchaseForm(FormKey formKey, int documentNumber,
+            DateTime documentDate, string addressOfPurchase,
             Organization sponsorOrganization, Approver approvingOfficer,
-            Specialist procurementSpecialist, Human salesman,
-            List<Merchandise> purchasedMerchandises)
+            Employee procurementSpecialist, Supplier salesman,
+            ICollection<Merchandise> purchasedMerchandises)
         {
-            StateStandardOfTheForm = stateStandardOfTheForm;
-            Key = key;
+            FormKey = formKey;
             DocumentNumber = documentNumber;
             DocumentDate = documentDate;
             AddressOfPurchase = addressOfPurchase;
@@ -124,7 +149,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
             float totalCost = 0.0f;
             foreach (Merchandise merchandise in PurchasedMerchandises)
             {
-                totalCost += merchandise.TotalCost;
+                totalCost += merchandise.CostPerUnit * merchandise.Count;
             }
             return totalCost;
         }

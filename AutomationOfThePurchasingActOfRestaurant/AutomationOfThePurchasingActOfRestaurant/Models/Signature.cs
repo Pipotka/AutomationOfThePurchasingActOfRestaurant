@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace AutomationOfThePurchasingActOfRestaurant.Models
 {
@@ -9,6 +12,10 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
     /// </summary>
     public sealed class Signature
     {
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid SignatureId { get; set; } = Guid.NewGuid();
         /// <summary>
         /// Режим сглаживания <see cref="Graphics.SmoothingMode"/> для рисования подписи
         /// </summary>
@@ -26,26 +33,43 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// </summary>
         public static Pen SignaturePen = new Pen(Color.Black, PenWidth);
         /// <summary>
+        /// Регулярное выражение для расшифровки подписи
+        /// </summary>
+        public static Regex RegularExpressionForSignatureDecryption = new Regex(@"^[A-ZА-Я]\\.?([A-ZА-Я]\\.)? [A-ZА-Я][a-zа-я]*$");
+        /// <summary>
         /// Точки из которых состоит подпись
         /// </summary>
         [Required]
-        public readonly Point[] Points;
+        public Point[] Points { get; set; }
         /// <summary>
-        /// Наименьшая координата Y <see cref="Signature"/>
+        /// Расшифровка подписи
+        /// </summary>
+        [Required(ErrorMessage = "Необходима расшифровка подписи")]
+        [RegularExpression(@"^[A-ZА-Я]\.?([A-ZА-Я]\.)? [A-ZА-Я][a-zа-я]*$"
+, ErrorMessage = "Неправильная расшифровка подписи")]
+        [Display(Name = "Расшифровка подписи")]
+        public string SignatureDecryption { get; set; }
+        /// <summary>
+        /// Наименьшая координата Y <see cref="Points"/>
         /// </summary>
         private int minY = 0;
         /// <summary>
-        /// Наибольшая координата Y <see cref="Signature"/>
+        /// Наибольшая координата Y <see cref="Points"/>
         /// </summary>
         private int maxY = 0;
         /// <summary>
-        /// Наименьшая координата X <see cref="Signature"/>
+        /// Наименьшая координата X <see cref="Points"/>
         /// </summary>
         private int minX = 0;
         /// <summary>
-        /// Наибольшая координата X <see cref="Signature"/>
+        /// Наибольшая координата X <see cref="Points"/>
         /// </summary>
         private int maxX = 0;
+
+        /// <summary>
+        /// Пустой конструктор <see cref="Signature"/>
+        /// </summary>
+        public Signature() { }
 
         /// <summary>
         /// Конструктор <see cref="Signature"/>
@@ -53,41 +77,29 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <param name="points">
         /// <inheritdoc cref="Points" path="/summary"/>
         /// </param>
-        public Signature(List<Point> points)
+        /// <param name="signatureDecryption">
+        /// <inheritdoc cref="SignatureDecryption" path="/summary"/>
+        /// </param>
+        public Signature(List<Point> points, string signatureDecryption)
         {
-            for (int i = 0; i < points.Count; i++)
-            {
-                // Определение крайних точек
-                if (points[i] != ConnectionBreakpoint)
-                {
-                    if (points[i].X > maxX)
-                    {
-                        maxX = points[i].X;
-                    }
-                    else if (points[i].X < minX)
-                    {
-                        minX = points[i].X;
-                    }
-
-                    if (points[i].Y > maxY)
-                    {
-                        maxY = points[i].Y;
-                    }
-                    else if (points[i].Y < minY)
-                    {
-                        minY = points[i].Y;
-                    }
-                }
-
-                //Удаление повторяющихся точек
-                if ((i + 1 < points.Count) && (points[i] == points[i + 1]))
-                {
-                    points.RemoveAt(i);
-                    i--;
-                }
-            }
             Points = new Point[points.Count];
             points.CopyTo(Points);
+            SignatureDecryption = signatureDecryption;
+        }
+
+        /// <summary>
+        /// Конструктор <see cref="Signature"/>
+        /// </summary>
+        /// <param name="signature">
+        /// <inheritdoc cref="Signature" path="/summary"/>
+        /// </param>
+        /// <param name="signatureDecryption">
+        /// <inheritdoc cref="SignatureDecryption" path="/summary"/>
+        /// </param>
+        public Signature(Signature signature)
+        {
+            Points = (Point[])(signature.Points.Clone());
+            SignatureDecryption = signature.SignatureDecryption;
         }
 
         /// <summary>
@@ -116,7 +128,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
                     // Смещение точек
                     if ((xOffset != 0) && (yOffset != 0))
                     {
-                        for (int i = 0; i < submass.Length; i++)
+                        for (var i = 0; i < submass.Length; i++)
                         {
                             submass[i].X += (int)xOffset;
                             submass[i].Y += (int)yOffset;
@@ -129,13 +141,43 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         }
 
         /// <summary>
+        /// Определяет крайние точки <see cref="Points"/>
+        /// </summary>
+        private void DeterminationOfExtremePoints()
+        {
+            for (int i = 0; i < Points.Length; i++)
+            {
+                if (Points[i] != ConnectionBreakpoint)
+                {
+                    if (Points[i].X > maxX)
+                    {
+                        maxX = Points[i].X;
+                    }
+                    else if (Points[i].X < minX)
+                    {
+                        minX = Points[i].X;
+                    }
+
+                    if (Points[i].Y > maxY)
+                    {
+                        maxY = Points[i].Y;
+                    }
+                    else if (Points[i].Y < minY)
+                    {
+                        minY = Points[i].Y;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Пропорцианально изменяет размер изображения. Если <paramref name="newHeight"/> и <paramref name="newWidth"/> непропорцианальны, то расчитывается новое значение меньшей из величин
         /// </summary>
         /// <param name="source">Изображение <see cref="Signature"/></param>
         /// <param name="newHeight">Новая высота изображения</param>
         /// <param name="newWidth">Новая ширина изображения</param>
         /// <returns>Изображение с изменённым размером</returns>
-        static public Bitmap ProportionalResizingTheSignatureImage(Bitmap source, int newHeight, int newWidth)
+        static public Bitmap ProportionalResizingTheBmpImage(Bitmap source, int newHeight, int newWidth)
         {
             float newImageHeight = newHeight;
             float newImageWidth = newWidth;
@@ -177,16 +219,17 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// </returns>
         public Bitmap CreateSingatireBmpImage(bool isTransparentBackground)
         {
-            int width = (maxX - minX) + PenWidth * 2;
-            int height = (maxY - minY) + PenWidth * 2;
-            int xOffset = PenWidth;
-            int yOffset = PenWidth;
-            Bitmap bitmap = new Bitmap(width, height);
+            DeterminationOfExtremePoints();
+            var width = (maxX - minX) + PenWidth * 2;
+            var height = (maxY - minY) + PenWidth * 2;
+            var xOffset = PenWidth;
+            var yOffset = PenWidth;
+            var bitmap = new Bitmap(width, height);
             if (isTransparentBackground)
             {
                 bitmap.MakeTransparent();
             }
-            Graphics graphic = Graphics.FromImage(bitmap);
+            var graphic = Graphics.FromImage(bitmap);
             DrawSignature(graphic, this, xOffset, yOffset);
             return bitmap;
         }
