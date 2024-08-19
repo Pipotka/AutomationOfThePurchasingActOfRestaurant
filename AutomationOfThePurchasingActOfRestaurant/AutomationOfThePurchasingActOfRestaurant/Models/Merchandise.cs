@@ -11,7 +11,11 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid MerchandiseId { get; set; } = Guid.NewGuid();
+        public Guid MerchandiseId { get; set; }
+        /// <summary>
+        /// <see cref="PurchaseForm"/>
+        /// </summary>
+        public ICollection<PurchaseForm> PurchaseForms { get; set; }
         /// <summary>
         /// Наименование, характеристика товара
         /// </summary>
@@ -43,50 +47,13 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         [Range(1, int.MaxValue)]
         public int Count { get; set; }
         /// <summary>
-        /// Цена за единицу товара
+        /// Цены
         /// </summary>
-        [Required(ErrorMessage = "Цена за единицу товара не указана")]
-        [Display(Name = "Цена за единицу товара")]
-        [Range(0.0, float.MaxValue)]
-        public float CostPerUnit { get; set; }
-        /// <summary>
-        /// Закупочные акты, в которых присутствует
-        /// <inheritdoc cref="Merchandise" path="/summary"/>
-        /// </summary>
-        public ICollection<PurchaseForm> PurchaseForms { get; set; }
+        public ICollection<MerchandisePrice> Prices { get; set; }
 
         /// <summary>
         /// Пустой конструктор <see cref="Merchandise"/>
         /// </summary>
         public Merchandise() { }
-
-        /// <summary>
-        /// Конструктор <see cref="Merchandise"/>
-        /// </summary>
-        /// <param name="name">
-        /// <inheritdoc cref="Name" path="/summary"/>
-        /// </param>
-        /// <param name="merchandiseKey">
-        /// <inheritdoc cref="MerchandiseKey" path="/summary"/>
-        /// </param>
-        /// <param name="measurementUnit">
-        /// <inheritdoc cref="MeasurementUnit" path="/summary"/>
-        /// </param>
-        /// <param name="count">
-        /// <inheritdoc cref="Count" path="/summary"/>
-        /// </param>
-        /// <param name="costPerUnit">
-        /// <inheritdoc cref="CostPerUnit" path="/summary"/>
-        /// </param>
-        public Merchandise(string name, int merchandiseKey,
-            MeasurementUnit measurementUnit, int count,
-            float costPerUnit)
-        {
-            Name = name;
-            MerchandiseKey = merchandiseKey;
-            MeasurementUnit = measurementUnit;
-            Count = count;
-            CostPerUnit = costPerUnit;
-        }
     }
 }

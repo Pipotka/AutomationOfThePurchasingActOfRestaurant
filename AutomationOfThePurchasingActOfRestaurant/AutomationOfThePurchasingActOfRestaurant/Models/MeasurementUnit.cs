@@ -10,7 +10,11 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid MeasurementUnitId { get; set; } = Guid.NewGuid();
+        public Guid MeasurementUnitId { get; set; }
+        /// <summary>
+        /// <see cref="Merchandise"/>
+        /// </summary>
+        public ICollection<Merchandise> Merchandises { get; set; }
         /// <summary>
         /// Наибольший код по ОКЕИ
         /// </summary>
@@ -33,21 +37,6 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// Пустой конструктор <see cref="MeasurementUnit"/>
         /// </summary>
         public MeasurementUnit() { }
-
-        /// <summary>
-        /// Конструктор <see cref="MeasurementUnit"/>
-        /// </summary>
-        /// <param name="name">
-        /// <inheritdoc cref="Name" path="/summary"/>
-        /// </param>
-        /// <param name="OKEIKey">
-        /// <inheritdoc cref="OKEIKey" path="/summary"/>
-        /// </param>
-        public MeasurementUnit(string name, short OKEIKey)
-        {
-            Name = name;
-            this.OKEIKey = OKEIKey;
-        }
 
         /// <summary>
         /// Превращает <see cref="OKEIKey"/> в строку

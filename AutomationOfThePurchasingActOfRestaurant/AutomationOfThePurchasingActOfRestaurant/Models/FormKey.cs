@@ -10,7 +10,15 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid FormKeyId { get; set; } = Guid.NewGuid();
+        public Guid FormKeyId { get; set; }
+        /// <summary>
+        /// <see cref="PurchaseForm"/> Id
+        /// </summary>
+        public Guid PurchaseFormId { get; set; }
+        /// <summary>
+        /// <see cref="PurchaseForm"/>
+        /// </summary>
+        public PurchaseForm PurchaseForm { get; set; }
         /// <summary>
         /// Длина <see cref="OKUD"/>
         /// </summary>
@@ -56,29 +64,5 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// Пустой конструктор <see cref="FormKey"/>
         /// </summary>
         public FormKey() { }
-
-        /// <summary>
-        /// Конструктор <see cref="FormKey"/>
-        /// </summary>
-        /// <param name="OKUD">
-        /// <inheritdoc cref="OKUD" path="/summary"/>
-        /// </param>
-        /// <param name="OKPO">
-        /// <inheritdoc cref="OKPO" path="/summary"/>
-        /// </param>
-        /// <param name="TIN">
-        /// <inheritdoc cref="TIN" path="/summary"/>
-        /// </param>
-        /// <param name="OKDP">
-        /// <inheritdoc cref="OKDP" path="/summary"/>
-        /// </param>
-        public FormKey(string OKUD, string OKPO,
-            string TIN, string OKDP)
-        {
-            this.OKUD = OKUD;
-            this.OKPO = OKPO;
-            this.OKDP = OKDP;
-            this.TIN = TIN;
-        }
     }
 }

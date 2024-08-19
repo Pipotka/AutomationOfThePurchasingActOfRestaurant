@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Reflection;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace AutomationOfThePurchasingActOfRestaurant.Models
@@ -15,7 +13,15 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid SignatureId { get; set; } = Guid.NewGuid();
+        public Guid SignatureId { get; set; }
+        /// <summary>
+        /// <see cref="Approver"/> Id
+        /// </summary>
+        public Guid ApproverId { get; set; }
+        /// <summary>
+        /// <see cref="Approver"/>
+        /// </summary>
+        public Approver Approver { get; set; }
         /// <summary>
         /// Режим сглаживания <see cref="Graphics.SmoothingMode"/> для рисования подписи
         /// </summary>
@@ -49,6 +55,10 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
 , ErrorMessage = "Неправильная расшифровка подписи")]
         [Display(Name = "Расшифровка подписи")]
         public string SignatureDecryption { get; set; }
+        /// <summary>
+        /// Указывает на актуальность подписи. Если <c>False</c>, то подпись актуальна, если <c>True</c>, то это значит, что <see cref="Approver"/> поменял свою подпись
+        /// </summary>
+        public bool IsObsolete { get; set; } = false;
         /// <summary>
         /// Наименьшая координата Y <see cref="Points"/>
         /// </summary>

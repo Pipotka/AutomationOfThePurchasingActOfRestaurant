@@ -10,7 +10,11 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid SupplierId { get; set; } = Guid.NewGuid();
+        public Guid SupplierId { get; set; }
+        /// <summary>
+        /// <see cref="PurchaseForm"/>
+        /// </summary>
+        public ICollection<PurchaseForm> PurchaseForms { get; set; }
         /// <summary>
         /// Имя
         /// </summary>
