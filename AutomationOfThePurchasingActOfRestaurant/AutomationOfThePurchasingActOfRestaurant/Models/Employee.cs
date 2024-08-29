@@ -10,7 +10,11 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid EmployeeId { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; }
+        /// <summary>
+        /// <see cref="PurchaseForm"/>
+        /// </summary>
+        public ICollection<PurchaseForm> PurchaseForms { get; set; }
         /// <summary>
         /// Имя
         /// </summary>
@@ -29,6 +33,10 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         [Display(Name = "Отчество")]
         public string? Patronymic { get; set; }
         /// <summary>
+        /// <see cref="EmployeePosition"/> Id
+        /// </summary>
+        public Guid PositionId { get; set; }
+        /// <summary>
         /// Должность
         /// </summary>
         [Required(ErrorMessage = "Должность не указана")]
@@ -39,31 +47,5 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// Пустой конструктор <see cref="Employee"/>
         /// </summary>
         public Employee() { }
-
-        /// <summary>
-        /// Конструктор <see cref="Employee"/>
-        /// </summary>
-        /// <param name="post">
-        /// <inheritdoc cref="Position" path="/summary"/>
-        /// </param>
-        /// <param name="firstName">
-        /// <inheritdoc cref="FirstName" path="/summary"/>
-        /// </param>
-        /// <param name="lastName">
-        /// <inheritdoc cref="LastName" path="/summary"/>
-        /// </param>
-        /// <param name="patronymic">
-        /// <inheritdoc cref="Patronymic" path="/summary"/>
-        /// </param>
-        public Employee(EmployeePosition position, string firstName, string lastName,
-            string? patronymic = null)
-        {
-            patronymic ??= string.Empty;
-
-            FirstName = firstName;
-            LastName = lastName;
-            Patronymic = patronymic;
-            Position = position;
-        }
     }
 }

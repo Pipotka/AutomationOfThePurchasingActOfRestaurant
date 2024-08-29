@@ -5,17 +5,30 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
     /// <summary>
     /// Должность сотрудника
     /// </summary>
-    public enum EmployeePosition
+    public class EmployeePosition
     {
         /// <summary>
-        /// Специалист по закупкам
+        /// Id
         /// </summary>
-        [Display(Name = "Специалист по закупкам")]
-        ProcurementSpecialist,
+        public Guid Id { get; set; }
         /// <summary>
-        /// Директор
+        /// <see cref="Approver"/>
         /// </summary>
-        [Display(Name = "Директор")]
-        Director
+        public ICollection<Approver> Approvers { get; set; }
+        /// <summary>
+        /// <see cref="Employee"/>
+        /// </summary>
+        public ICollection<Employee> Employees { get; set; }
+        /// <summary>
+        /// Название должности
+        /// </summary>
+        [Required(ErrorMessage = "Название должности не указанно")]
+        [Display(Name = "Название должности")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Пустой конструктор <see cref="EmployeePosition"/>
+        /// </summary>
+        public EmployeePosition() { }
     }
 }

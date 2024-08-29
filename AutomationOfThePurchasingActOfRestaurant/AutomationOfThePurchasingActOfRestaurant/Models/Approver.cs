@@ -10,7 +10,11 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid ApproverId { get; set; }
+        public Guid Id { get; set; }
+        /// <summary>
+        /// <see cref="PurchaseForm"/>
+        /// </summary>
+        public ICollection<PurchaseForm> PurchaseForms { get; set; }
         /// <summary>
         /// Имя
         /// </summary>
@@ -29,48 +33,25 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         [Display(Name = "Отчество")]
         public string? Patronymic { get; set; }
         /// <summary>
+        /// <see cref="EmployeePosition"/> Id
+        /// </summary>
+        public Guid PositionId { get; set; }
+        /// <summary>
         /// Должность
         /// </summary>
         [Required(ErrorMessage = "Должность не указана")]
         [Display(Name = "Должность")]
         public EmployeePosition Position { get; set; }
         /// <summary>
-        /// <inheritdoc cref="Models.Signature" path="/summary"/>
+        /// Графические подписи <see cref="Approver"/>
         /// </summary>
         [Required(ErrorMessage = "Отсутствует подпись")]
         [Display(Name = "Подпись")]
-        public Signature Signature { get; set; }
+        public ICollection<Signature> Signatures { get; set; }
 
         /// <summary>
         /// Пустой конструктор <see cref="Approver"/>
         /// </summary>
         public Approver() { }
-
-        /// <summary>
-        /// Конструктор <see cref="Employee"/>
-        /// </summary>
-        /// <param name="post">
-        /// <inheritdoc cref="Position" path="/summary"/>
-        /// </param>
-        /// <param name="firstName">
-        /// <inheritdoc cref="FirstName" path="/summary"/>
-        /// </param>
-        /// <param name="lastName">
-        /// <inheritdoc cref="LastName" path="/summary"/>
-        /// </param>
-        /// <param name="patronymic">
-        /// <inheritdoc cref="Patronymic" path="/summary"/>
-        /// </param>
-        public Approver(EmployeePosition position, Signature signature, string firstName, string lastName,
-            string? patronymic = null)
-        {
-            patronymic ??= string.Empty;
-
-            FirstName = firstName;
-            LastName = lastName;
-            Patronymic = patronymic;
-            Position = position;
-            Signature = new Signature(signature);
-        }
     }
 }
