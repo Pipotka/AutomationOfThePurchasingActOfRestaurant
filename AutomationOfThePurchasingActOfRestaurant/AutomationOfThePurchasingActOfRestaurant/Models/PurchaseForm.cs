@@ -10,7 +10,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid PurchaseFormId { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// <see cref="FormKey"/> Id
         /// </summary>
@@ -108,7 +108,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
             MerchandisePrice merchandisePrice;
             foreach (Merchandise merchandise in PurchasedMerchandises)
             {
-                merchandisePrice = Prices.FirstOrDefault(mp => mp.MerchandiseId == merchandise.MerchandiseId);
+                merchandisePrice = Prices.FirstOrDefault(mp => mp.MerchandiseId == merchandise.Id);
                 totalCost += merchandisePrice.CostPerUnit * merchandise.Count;
             }
             return totalCost;

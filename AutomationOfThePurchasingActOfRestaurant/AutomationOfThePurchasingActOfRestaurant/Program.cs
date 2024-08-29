@@ -1,6 +1,7 @@
 using AutomationOfThePurchasingActOfRestaurant;
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
+using System.Xml.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -10,7 +11,14 @@ var configuration = builder.Configuration;
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+    var dir = new DirectoryInfo(AppContext.BaseDirectory);
+    var doc = XDocument
+    .Load($"{dir}\\AutomationOfThePurchasingActOfRestaurant.xml");
+    opt.IncludeXmlComments(
+        () => new System.Xml.XPath.XPathDocument(doc.CreateReader()), true);
+});
 builder.Services.AddDbContext<PurchasingDbContext>(
     options =>
     {

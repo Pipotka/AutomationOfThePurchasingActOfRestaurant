@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AutomationOfThePurchasingActOfRestaurant.Models
 {
@@ -10,7 +11,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid FormKeyId { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// <see cref="PurchaseForm"/> Id
         /// </summary>

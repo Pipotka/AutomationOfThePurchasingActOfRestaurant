@@ -11,7 +11,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid MerchandiseId { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// <see cref="PurchaseForm"/>
         /// </summary>

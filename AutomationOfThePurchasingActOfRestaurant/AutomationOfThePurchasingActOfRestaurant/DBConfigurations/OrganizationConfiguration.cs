@@ -8,7 +8,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.DBConfigurations
     {
         public void Configure(EntityTypeBuilder<Organization> builder)
         {
-            builder.HasKey(o => o.OrganizationId);
+            builder.HasKey(o => o.Id);
 
             builder.HasMany(o => o.PurchaseForms)
                 .WithOne(p => p.SponsorOrganization)

@@ -11,7 +11,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.DBConfigurations
     {
         public void Configure(EntityTypeBuilder<Signature> builder)
         {
-            builder.HasKey(s => s.SignatureId);
+            builder.HasKey(s => s.Id);
 
             builder.Property(s => s.Points)
                 .HasConversion(v => JsonConvert.SerializeObject(v),

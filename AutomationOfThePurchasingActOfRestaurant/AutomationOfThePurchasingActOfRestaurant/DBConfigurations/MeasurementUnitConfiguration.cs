@@ -8,7 +8,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.DBConfigurations
     {
         public void Configure(EntityTypeBuilder<MeasurementUnit> builder)
         {
-            builder.HasKey(mu => mu.MeasurementUnitId);
+            builder.HasKey(mu => mu.Id);
 
             builder.HasMany(mu => mu.Merchandises)
                 .WithOne(m => m.MeasurementUnit)

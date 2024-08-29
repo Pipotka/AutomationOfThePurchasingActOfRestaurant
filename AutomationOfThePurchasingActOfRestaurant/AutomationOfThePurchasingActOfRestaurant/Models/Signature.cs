@@ -13,7 +13,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// <summary>
         /// Id
         /// </summary>
-        public Guid SignatureId { get; set; }
+        public Guid Id { get; set; }
         /// <summary>
         /// <see cref="Approver"/> Id
         /// </summary>
@@ -46,7 +46,18 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         /// Точки из которых состоит подпись
         /// </summary>
         [Required]
-        public Point[] Points { get; set; }
+        public Point[] Points
+        {
+            get
+            {
+                return Points;
+            }
+            set
+            {
+                Points = value;
+                DeterminationOfExtremePoints();
+            }
+        }
         /// <summary>
         /// Расшифровка подписи
         /// </summary>
@@ -113,7 +124,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         }
 
         /// <summary>
-        /// Рисует <see cref="Signature"/> на <see cref="Graphics"/> используя <see cref="Points"/>
+        /// Рисует <see cref="Signature"/> на <see cref="Graphics"/>
         /// </summary>
         /// <param name="graphics">
         /// <see cref="Graphics"/>
@@ -134,7 +145,7 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
                 if (signature.Points[nextConnectionBreakpoint] == ConnectionBreakpoint)
                 {
                     Point[] submass = new Point[(nextConnectionBreakpoint + nextOffset) - (lastConnectionBreakpointIndex + lastOffset)];
-                    CopyMassToMass(submass, 0, signature.Points, lastConnectionBreakpointIndex + lastOffset, submass.Length);
+                    Array.Copy(signature.Points, lastConnectionBreakpointIndex + lastOffset, submass, 0, submass.Length);
                     // Смещение точек
                     if ((xOffset != 0) && (yOffset != 0))
                     {
@@ -181,93 +192,24 @@ namespace AutomationOfThePurchasingActOfRestaurant.Models
         }
 
         /// <summary>
-        /// Пропорцианально изменяет размер изображения. Если <paramref name="newHeight"/> и <paramref name="newWidth"/> непропорцианальны, то расчитывается новое значение меньшей из величин
+        /// Возвращает наименьшую координату Y из <see cref="Points"/>
         /// </summary>
-        /// <param name="source">Изображение <see cref="Signature"/></param>
-        /// <param name="newHeight">Новая высота изображения</param>
-        /// <param name="newWidth">Новая ширина изображения</param>
-        /// <returns>Изображение с изменённым размером</returns>
-        static public Bitmap ProportionalResizingTheBmpImage(Bitmap source, int newHeight, int newWidth)
-        {
-            float newImageHeight = newHeight;
-            float newImageWidth = newWidth;
-            float sourceProportion = (float)source.Width / source.Height;
-            float newImageProportion = newImageWidth / newImageHeight;
-
-            // Перерасчёт наименьщей стороны
-            if (sourceProportion != newImageProportion)
-            {
-                if (newImageWidth > newImageHeight)
-                {
-                    newImageHeight = (newImageWidth * source.Height) / source.Width;
-                }
-                else
-                {
-                    newImageWidth = (source.Width * newImageHeight) / source.Height;
-                }
-            }
-
-            Bitmap resizedImage = new Bitmap((int)newImageWidth, (int)newImageHeight);
-            resizedImage.MakeTransparent();
-
-            Graphics graphic = Graphics.FromImage(resizedImage);
-            graphic.SmoothingMode = SignatureSmoothingMode;
-            graphic.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphic.DrawImage(source, 0, 0, newImageWidth, newImageHeight);
-
-            return resizedImage;
-        }
-
+        /// <returns>Наименьшая координата Y из <see cref="Points"/></returns>
+        public int GetMinY() => minY;
         /// <summary>
-        /// Создаёт Bmp изображение <see cref="Signature"/>
+        /// Возвращает наибольшую координату Y из <see cref="Points"/>
         /// </summary>
-        /// <param name="isTransparentBackground">
-        /// Указывает будет ли фон прозрачный
-        /// </param>
-        /// <returns>
-        /// Bmp изображение <see cref="Signature"/>
-        /// </returns>
-        public Bitmap CreateSingatireBmpImage(bool isTransparentBackground)
-        {
-            DeterminationOfExtremePoints();
-            var width = (maxX - minX) + PenWidth * 2;
-            var height = (maxY - minY) + PenWidth * 2;
-            var xOffset = PenWidth;
-            var yOffset = PenWidth;
-            var bitmap = new Bitmap(width, height);
-            if (isTransparentBackground)
-            {
-                bitmap.MakeTransparent();
-            }
-            var graphic = Graphics.FromImage(bitmap);
-            DrawSignature(graphic, this, xOffset, yOffset);
-            return bitmap;
-        }
-
+        /// <returns>Наибольшая координата Y из <see cref="Points"/></returns>
+        public int GetMaxY() => maxY;
         /// <summary>
-        /// Копирует массив в массив
+        /// Возвращает наименьшую координату X из <see cref="Points"/>
         /// </summary>
-        /// <typeparam name="T">Тип массива</typeparam>
-        /// <param name="copyTo">Копирующий массив</param>
-        /// <param name="copyToStartIndex">Индекс копирующего мссива с которого начинается копирование</param>
-        /// <param name="copyFrom">Копируемый массив</param>
-        /// <param name="copyFromStartIndex">Индекс копируемого массива с которого начинается копирование</param>
-        /// <param name="count">количество элементов, которое нужно скопировать</param>
-        static private void CopyMassToMass<T>(T[] copyTo, int copyToStartIndex, T[] copyFrom, int copyFromStartIndex, int count)
-        {
-            int currentCount = 0;
-            for (int copyToIndex = copyToStartIndex, copyFromIndex = copyFromStartIndex; copyToIndex < copyFrom.Length; copyToIndex++, copyFromIndex++)
-            {
-                if (currentCount < count)
-                {
-                    copyTo[copyToIndex] = copyFrom[copyFromIndex];
-                    currentCount++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
+        /// <returns>Наименьшая координата X из <see cref="Points"/></returns>
+        public int GetMinX() => minX;
+        /// <summary>
+        /// Возвращает наибольшую координату X из <see cref="Points"/>
+        /// </summary>
+        /// <returns>Наибольшая координата X из <see cref="Points"/></returns>
+        public int GetMaxX() => maxX;
     }
 }
