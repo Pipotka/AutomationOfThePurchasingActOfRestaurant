@@ -1,0 +1,202 @@
+﻿@page "/MainSupplier"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Reflection
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Поставщик</PageTitle>
+<div align="center">
+    <!-- Название сайта с ссылкой на страницу Home -->
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+<div class="navbar">
+    <!-- Выпадающий список для сортировок -->
+    <div>
+        <label>Сортировать по:</label>
+        <select @bind="SelectedSortBy" @bind:event="onchange" class="form-control" style="width: 200px;">
+            @foreach (var sort in Enum.GetValues(typeof(SupplierSortBy)))
+            {
+                <option value="@sort">@sort</option>
+            }
+        </select>
+    </div>
+
+    <!-- Элемент для регулировки количества элементов на странице -->
+    <div>
+        <label>Количество элементов на странице:</label>
+        <input type="number" min="1" step="1" @bind="pageSize" @bind:event="onchange" class="form-control" style="width: 200px;" />
+    </div>
+</div>
+
+<div>
+    <!-- Кнопка добавить утверждающего -->
+    <button class="btn btn-primary" @onclick="AddSupplier">
+        <i class="fas fa-plus"></i> Добавить Поставщика
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if(items.Count == 0)
+{
+    <h2 align="center">Сущности не найдены</h2>
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+        <span class="mx-3">Страница @pageNumber</span>
+        <button class="btn btn-secondary" @onclick="NextPage">→</button>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <th>
+                Фамилия
+            </th>
+            <th>
+                Имя
+            </th>
+            <th>
+                Отчество
+            </th>
+            <th>
+                Действия
+            </th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>
+                        @(item.LastName)
+                    </td>
+                    <td>
+                        @item.FirstName
+                    </td>
+                    <td>
+                        @(item.Patronymic == string.Empty ? "Нет" : item.Patronymic)
+                    </td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Пагинация: стрелки для навигации по страницам -->
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+        <span class="mx-3">Страница @pageNumber</span>
+        <button class="btn btn-secondary" @onclick="NextPage">→</button>
+    </div>
+}
+
+@code {
+
+    private SupplierSortBy _selectedSortBy = SupplierSortBy.Id;
+    private SupplierSortBy SelectedSortBy
+    {
+        get => _selectedSortBy;
+        set
+        {
+            _selectedSortBy = value;
+            SelectedSortValueChange();
+        }
+    }
+
+    //Номер страницы
+    private int pageNumber = 1;
+    //Количество элементов на странице
+    private int _pageSize = 5;
+    private int pageSize
+    {
+        get => _pageSize;
+        set
+        {
+            if (_pageSize != value)
+            {
+                _pageSize = value;
+                pageNumber = 1;
+                GetPage();
+            }
+        }
+    }
+
+    private readonly Type soursType = typeof(SupplierResponseModel);
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private ICollection<SupplierResponseModel>? items;
+
+    private void AddSupplier()
+    {
+        NavigationManager.NavigateTo("/MainSupplier/CreateSupplier");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPage();
+    }
+
+    private async Task GetPage()
+    {
+        items = await PurchasingClient.GetPageOfSuppliersAsync(SelectedSortBy, pageNumber, pageSize, cancellationTokenSource.Token);
+    }
+
+    // Метод для перехода на предыдущую страницу
+    private async void PreviousPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await GetPage();
+        }
+    }
+
+    private async void SelectedSortValueChange()
+    {
+        await GetPage();
+    }
+
+    // Метод для перехода на следующую страницу
+    private async void NextPage()
+    {
+        pageNumber++;
+        await GetPage();
+    }
+
+    // Метод для обработки выбранного действия
+    private async Task HandleActionSelection(string action, Guid supplierId)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainSupplier/EditSupplier/{supplierId}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этого поставщика?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteSupplierAsync(supplierId, cancellationTokenSource.Token);
+                    await GetPage();
+                }
+                break;
+        }
+    }
+
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

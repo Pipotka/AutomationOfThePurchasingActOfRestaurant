@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	  <RootNamespace>Company.AutomationOfThePurchasingActOfRestaurant.Services</RootNamespace>
+	  <AssemblyName>AutomationOfThePurchasingActOfRestaurant.Services</AssemblyName>
+	  <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\Context.Repository.Contracts\Context.Repository.Contracts.csproj" />
+    <ProjectReference Include="..\OpenXML\Excel\Excel.ComfortableOperationsInterfaces\Excel.ComfortableOperationsInterfaces.csproj" />
+    <ProjectReference Include="..\Services.Contracts\Services.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>

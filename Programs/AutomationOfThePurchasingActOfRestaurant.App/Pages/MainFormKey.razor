@@ -1,0 +1,183 @@
+﻿@page "/MainFormKey"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Код формы</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div class="navbar">
+    <!-- Выпадающий список для сортировок -->
+    <div>
+        <label>Сортировать по:</label>
+        <select @bind="SelectedSortBy" @bind:event="onchange" class="form-control" style="width: 200px;">
+            @foreach (var sort in Enum.GetValues(typeof(FormKeySortBy)))
+            {
+                <option value="@sort">@sort</option>
+            }
+        </select>
+    </div>
+
+    <!-- Элемент для регулировки количества элементов на странице -->
+    <div>
+        <label>Количество элементов на странице:</label>
+        <input type="number" min="1" step="1" @bind="pageSize" @bind:event="onchange" class="form-control" style="width: 200px;" />
+    </div>
+</div>
+
+<div>
+    <button class="btn btn-primary" @onclick="AddFormKey">
+        <i class="fas fa-plus"></i> Добавить Код формы
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (items.Count == 0)
+{
+    <h2 align="center">Сущности не найдены</h2>
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+        <span class="mx-3">Страница @pageNumber</span>
+        <button class="btn btn-secondary" @onclick="NextPage">→</button>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <th>ОКПО</th>
+        <th>ОКДП</th>
+        <th>ОКУД</th>
+        <th>ИНН</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Okpo</td>
+                    <td>@item.Okdp</td>
+                    <td>@item.Okud</td>
+                    <td>@item.Tin</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Пагинация -->
+<div class="d-flex justify-content-center">
+    <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+    <span class="mx-3">Страница @pageNumber</span>
+    <button class="btn btn-secondary" @onclick="NextPage">→</button>
+</div>
+
+@code {
+    private FormKeySortBy _selectedSortBy = FormKeySortBy.Id;
+    private FormKeySortBy SelectedSortBy
+    {
+        get => _selectedSortBy;
+        set
+        {
+            _selectedSortBy = value;
+            SelectedSortValueChange();
+        }
+    }
+    private ICollection<FormKeyResponseModel>? items;
+
+    private int pageNumber = 1;
+    //Количество элементов на странице
+    private int _pageSize = 5;
+    private int pageSize
+    {
+        get => _pageSize;
+        set
+        {
+            if (_pageSize != value)
+            {
+                _pageSize = value;
+                pageNumber = 1;
+                GetPage();
+            }
+        }
+    }
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    // Метод для загрузки страницы
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPage();
+    }
+
+    private async Task GetPage()
+    {
+        items = await PurchasingClient.GetPageOfFormKeysAsync(SelectedSortBy, pageNumber, pageSize, cancellationTokenSource.Token);
+    }
+
+    // Метод для перехода на предыдущую страницу
+    private async void PreviousPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await GetPage();
+        }
+    }
+
+    private async void SelectedSortValueChange()
+    {
+        await GetPage();
+    }
+
+    // Метод для перехода на следующую страницу
+    private async void NextPage()
+    {
+        pageNumber++;
+        await GetPage();
+    }
+
+    // Метод для обработки действий (изменить или удалить)
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainFormKey/EditFormKey/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот Код формы?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteFormKeyAsync(id, cancellationTokenSource.Token);
+                    await GetPage();
+                }
+                break;
+        }
+    }
+
+    private void AddFormKey()
+    {
+        NavigationManager.NavigateTo("/MainFormKey/CreateFormKey");
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

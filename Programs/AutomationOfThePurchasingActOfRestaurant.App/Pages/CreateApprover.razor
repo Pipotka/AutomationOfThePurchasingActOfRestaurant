@@ -1,0 +1,112 @@
+﻿@page "/MainApprover/CreateApprover"
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@using System.Threading
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.RequestModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Text.Json
+
+<PageTitle>Создание утверждающего</PageTitle>
+
+<h3>Создание утверждающего</h3>
+
+<EditForm Model="approver" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator Validator="validationRules" />
+
+    <div class="form-group">
+        <label for="FirstName">Имя:</label>
+        <InputText id="FirstName" @bind-Value="approver.FirstName" class="form-control" />
+        <ValidationMessage For="@(() => approver.FirstName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="LastName">Фамилия:</label>
+        <InputText id="LastName" @bind-Value="approver.LastName" class="form-control" />
+        <ValidationMessage For="@(() => approver.LastName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Patronymic">Отчество:</label>
+        <InputText id="Patronymic" @bind-Value="approver.Patronymic" class="form-control" />
+        <ValidationMessage For="@(() => approver.Patronymic)" />
+    </div>
+
+    <div class="form-group">
+        <label for="PositionId">Должность:</label>
+        <InputSelect TValue="Guid" id="PositionId" @bind-Value="approver.PositionId" class="form-control">
+            @{
+                if (positions.Count > 0)
+                {
+                    foreach (var position in positions)
+                    {
+                        <option value="@position.Id">@position.Name</option>
+                    }
+                }
+                else
+                {
+                    <option value="">Нет должностей</option>
+                }
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => approver.PositionId)" />
+    </div>
+
+    <div class="form-group">
+        <label for="SignatureId">Подпись:</label>
+        <InputSelect TValue="Guid" id="SignatureId" @bind-Value="approver.SignatureId" class="form-control">
+            @{
+                if (availableSignatures.Count > 0)
+                {
+                    foreach (var signature in availableSignatures)
+                    {
+                        <option value="@signature.Id">@signature.SignatureDecryption</option>
+                    }
+                }
+                else
+                {
+                    <option value="">Нет не используемых подписей</option>
+                }
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => approver.SignatureId)" />
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Добавить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
+    </div>
+</EditForm>
+
+@code {
+    private ApproverRequest approver = new();
+    private ApproverRequestValidator validationRules = new ApproverRequestValidator();
+    private List<EmployeePositionResponseModel> positions = new();
+    private List<SignatureResponseModel> availableSignatures = new();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        positions = (await PurchasingClient.GetAllEmployeePositionsAsync(cancellationTokenSource.Token)).ToList();
+        availableSignatures = (await PurchasingClient.GetAllSignaturesAsync(cancellationTokenSource.Token))
+            .Where(s => s.ApproverId == null).ToList();
+    }
+
+    private async Task HandleSubmit()
+    {
+        var validationResult = validationRules.Validate(approver);
+        if (validationResult.IsValid)
+        {
+            var newApprover = await PurchasingClient.AddApproverAsync(approver, cancellationTokenSource.Token);
+            var signature = await PurchasingClient.GetSignatureByIdAsync(approver.SignatureId, cancellationTokenSource.Token);
+            signature.ApproverId = newApprover.Id;
+            await PurchasingClient.UpdateSignatureAsync((SignatureResponseModel)signature, cancellationTokenSource.Token);
+            NavigationManager.NavigateTo("/MainApprover");
+        }
+    }
+        
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/MainApprover");
+    }
+}

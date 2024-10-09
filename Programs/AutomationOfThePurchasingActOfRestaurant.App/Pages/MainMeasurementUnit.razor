@@ -1,0 +1,161 @@
+﻿@page "/MainMeasurementUnit"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Единица измерения</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div class="navbar">
+    <!-- Элемент для регулировки количества элементов на странице -->
+    <div>
+        <label>Количество элементов на странице:</label>
+        <input type="number" min="1" step="1" @bind="pageSize" @bind:event="onchange" class="form-control" style="width: 200px;" />
+    </div>
+</div>
+
+<div>
+    <!-- Кнопка добавить организацию -->
+    <button class="btn btn-primary" @onclick="AddMeasurementUnit">
+        <i class="fas fa-plus"></i> Добавить Единица измерения
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (items.Count() == 0)
+{
+    <h2 align="center">Сущности не найдены</h2>
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+        <span class="mx-3">Страница @pageNumber</span>
+        <button class="btn btn-secondary" @onclick="NextPage">→</button>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <th>Название</th>
+        <th>Коп по ОКЕИ</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.OkeiKey</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<!-- Пагинация -->
+<div class="d-flex justify-content-center">
+    <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+    <span class="mx-3">Страница @pageNumber</span>
+    <button class="btn btn-secondary" @onclick="NextPage">→</button>
+</div>
+
+@code {
+    private IEnumerable<MeasurementUnitResponseModel>? items;
+
+    private int pageNumber = 1;
+    //Количество элементов на странице
+    private int _pageSize = 5;
+    private int pageSize
+    {
+        get => _pageSize;
+        set
+        {
+            if (_pageSize != value)
+            {
+                _pageSize = value;
+                pageNumber = 1;
+                GetPage();
+            }
+        }
+    }
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    // Метод для загрузки страницы
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPage();
+    }
+
+    private async Task GetPage()
+    {
+        items = await PurchasingClient.GetAllMeasurementUnitsAsync(cancellationTokenSource.Token);
+        items = items.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+    }
+
+    // Метод для перехода на предыдущую страницу
+    private async void PreviousPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await GetPage();
+        }
+    }
+
+    private async void SelectedSortValueChange()
+    {
+        await GetPage();
+    }
+
+    // Метод для перехода на следующую страницу
+    private async void NextPage()
+    {
+        pageNumber++;
+        await GetPage();
+    }
+
+    // Метод для обработки действий (изменить или удалить)
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainMeasurementUnit/EditMeasurementUnit/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить эту единицу измерения?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteMeasurementUnitAsync(id, cancellationTokenSource.Token);
+                    await GetPage();
+                }
+                break;
+        }
+    }
+
+    private void AddMeasurementUnit()
+    {
+        Console.WriteLine("Метод AddMeasurementUnit сработал");
+        NavigationManager.NavigateTo("/MainMeasurementUnit/CreateMeasurementUnit");
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

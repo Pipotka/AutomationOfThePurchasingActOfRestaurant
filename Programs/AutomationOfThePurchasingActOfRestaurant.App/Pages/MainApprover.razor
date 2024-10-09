@@ -1,0 +1,165 @@
+﻿@page "/MainApprover"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Reflection
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<PageTitle>Главная. Утверждающие</PageTitle>
+<div align="center">
+    <!-- Название сайта с ссылкой на страницу Home -->
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+<div class="navbar">
+    <!-- Выпадающий список для сортировок -->
+    <div>
+        <label>Сортировать по:</label>
+        <select @bind="SelectedSortBy" class="form-control" style="width: 200px;">
+            @foreach (var sort in Enum.GetValues(typeof(ApproverSortBy)))
+            {
+                <option value="@sort">@sort</option>
+            }
+        </select>
+    </div>
+
+    <!-- Элемент для регулировки количества элементов на странице -->
+    <div>
+        <label>Количество элементов на странице:</label>
+        <input type="number" min="1" step="1" @bind="pageSize" @bind:event="onchange" class="form-control" style="width: 200px;" />
+    </div>
+</div>
+
+<div>
+    <!-- Кнопка добавить утверждающего -->
+    <button class="btn btn-primary" @onclick="AddApprover">
+        <i class="fas fa-plus"></i> Добавить Утверждающего
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            @{
+                <tr>
+                    ФИО
+                </tr>
+                <tr>
+                    Должность
+                </tr>
+                <tr>
+                    Подпись
+                </tr>
+            }
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>
+                        @($"{item.LastName} {item.FirstName} {item.Patronymic}")
+                    </td>
+                    <td>
+                        @item.Position.Name
+                    </td>
+                    <td>
+                        @signatureImages[item.Id]
+                    </td>
+                    <td>
+                        <select class="form-control">
+                            <option value="">Изменить</option>
+                            <option value="">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Пагинация: стрелки для навигации по страницам -->
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(pageNumber <= 1)">←</button>
+        <span class="mx-3">Страница @pageNumber</span>
+        <button class="btn btn-secondary" @onclick="NextPage">→</button>
+    </div>
+}
+
+@code {
+    // Выбранная сортировка
+    private ApproverSortBy SelectedSortBy { get; set; } = ApproverSortBy.Id;
+    private Dictionary<Guid, Bitmap> signatureImages = new Dictionary<Guid, Bitmap>();
+    //Номер страницы
+    private int pageNumber = 1;
+    //Количество элементов на странице
+    private int _pageSize = 5;
+    private int pageSize
+    {
+        get => _pageSize;
+        set
+        {
+            if (_pageSize != value)
+            {
+                _pageSize = value;
+                GetPage();
+            }
+        }
+    }
+
+    private readonly Type soursType = typeof(ApproverResponseModel);
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private ICollection<ApproverResponseModel>? items;
+
+    private void AddApprover()
+    {
+        NavigationManager.NavigateTo("/MainApprover/CreateApprover");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetPage();
+    }
+
+    private async Task GetPage()
+    {
+        items = await PurchasingClient.GetPageOfApproversAsync(SelectedSortBy, pageNumber, pageSize, cancellationTokenSource.Token);
+        signatureImages.Clear();
+
+        if (items != null && items.Count > 0)
+        {
+            foreach (var item in items)
+            {
+                var image = await PurchasingClient.ConvertSignatureToImageAsync(item.SignatureId, 200, 300, true, true, cancellationTokenSource.Token);
+                signatureImages.Add(item.Id, image);
+            }
+        }
+    }
+
+    // Метод для перехода на предыдущую страницу
+    private void PreviousPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            GetPage();
+        }
+    }
+
+    // Метод для перехода на следующую страницу
+    private void NextPage()
+    {
+        pageNumber++;
+        GetPage();
+    }
+
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}
