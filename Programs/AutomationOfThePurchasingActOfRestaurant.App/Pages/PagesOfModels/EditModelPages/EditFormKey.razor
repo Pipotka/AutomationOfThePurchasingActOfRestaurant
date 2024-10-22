@@ -1,0 +1,80 @@
+﻿@page "/MainFormKey/EditFormKey/{Id:guid}"
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@using System.Threading
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.ResponceModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Text.Json
+
+<PageTitle>Редактирование Кода формы</PageTitle>
+
+<h3>Редактирование Кода формы</h3>
+
+<EditForm Model="entity" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator Validator="validationRules" />
+
+    <div class="form-group">
+        <label for="Okdp">ОКДП:</label>
+        <InputText id="Okdp" @bind-Value="entity.Okdp" class="form-control" />
+        <ValidationMessage For="@(() => entity.Okdp)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Okpo">ОКПО:</label>
+        <InputText id="Okpo" @bind-Value="entity.Okpo" class="form-control" />
+        <ValidationMessage For="@(() => entity.Okpo)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Okud">ОКУД:</label>
+        <InputText id="Okud" @bind-Value="entity.Okud" class="form-control" />
+        <ValidationMessage For="@(() => entity.Okud)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Tin">ИНН:</label>
+        <InputText id="Tin" @bind-Value="entity.Tin" class="form-control" />
+        <ValidationMessage For="@(() => entity.Tin)" />
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private FormKeyResponseModel entity = new();
+    private FormKeyResponseModelValidator validationRules = new FormKeyResponseModelValidator();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Получаем данные поставщика по Id
+            entity = await PurchasingClient.GetFormKeyByIdAsync(Id, cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при получении Кода формы: {ex.Message}");
+            NavigationManager.NavigateTo("/MainFormKey");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var validationResult = validationRules.Validate(entity);
+        if (validationResult.IsValid)
+        {
+            await PurchasingClient.UpdateFormKeyAsync(entity, cancellationTokenSource.Token);
+            NavigationManager.NavigateTo("/MainFormKey");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/MainFormKey");
+    }
+}

@@ -1,0 +1,61 @@
+﻿@page "/MainEmployeePosition/EditEmployeePosition/{Id:guid}"
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@using System.Threading
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.ResponceModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Text.Json
+
+<PageTitle>Редактирование Должности сотрудника</PageTitle>
+
+<h3>Редактирование Должности сотрудника</h3>
+
+<EditForm Model="entity" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator Validator="validationRules" />
+
+    <div class="form-group">
+        <label for="Name">Название:</label>
+        <InputNumber id="Name" @bind-Value="entity.Name" class="form-control" />
+        <ValidationMessage For="@(() => entity.Name)" />
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Добавить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    private EmployeePositionResponseModel entity = new();
+    private EmployeePositionResponseModelValidator validationRules = new EmployeePositionResponseModelValidator();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            entity = await PurchasingClient.GetEmployeePositionByIdAsync(Id, cancellationTokenSource.Token);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при получении должности сотрудника: {ex.Message}");
+            NavigationManager.NavigateTo("/MainEmployeePosition");
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var validationResult = validationRules.Validate(entity);
+        if (validationResult.IsValid)
+        {
+            await PurchasingClient.UpdateEmployeePositionAsync(entity, cancellationTokenSource.Token);
+            NavigationManager.NavigateTo("/MainEmployeePosition");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/MainEmployeePosition");
+    }
+}

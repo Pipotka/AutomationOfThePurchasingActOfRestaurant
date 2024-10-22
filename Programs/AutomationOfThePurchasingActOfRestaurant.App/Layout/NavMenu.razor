@@ -1,0 +1,74 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">AutomationOfThePurchasingActOfRestaurant.App</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainApprover">
+                <span class="fas fa-file-signature" aria-hidden="true"></span> Утверждающие
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainEmployee">
+                <span class="fas fa-file-signature" aria-hidden="true"></span> Сотрудники
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainEmployeePosition">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Должности
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainFormKey">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Кода форм
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainMeasurementUnit">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Единицы измерения
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainMerchandise">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Товары
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainOrganization">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Организации
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainPurchaseForm">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Закупочные акты
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="MainSupplier">
+                <span class="bi bi-truck" aria-hidden="true"></span> Поставщики
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

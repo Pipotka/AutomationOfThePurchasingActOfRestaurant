@@ -1,0 +1,92 @@
+﻿@page "/MainMeasurementUnit"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Единица измерения</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <!-- Кнопка добавить организацию -->
+    <button class="btn btn-primary" @onclick="AddMeasurementUnit">
+        <i class="fas fa-plus"></i> Добавить Единица измерения
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <th>Название</th>
+        <th>Коп по ОКЕИ</th>
+        <th>Действие</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.OkeiKey</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<MeasurementUnitResponseModel>? items;
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllMeasurementUnitsAsync(cancellationTokenSource.Token);
+    }
+
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainMeasurementUnit/EditMeasurementUnit/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить эту единицу измерения?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteMeasurementUnitAsync(id, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == id);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+    private void AddMeasurementUnit()
+    {
+        Console.WriteLine("Метод AddMeasurementUnit сработал");
+        NavigationManager.NavigateTo("/MainMeasurementUnit/CreateMeasurementUnit");
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

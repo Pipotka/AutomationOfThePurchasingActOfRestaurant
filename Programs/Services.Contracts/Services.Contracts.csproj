@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+	  <RootNamespace>Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts</RootNamespace>
+	  <AssemblyName>AutomationOfThePurchasingActOfRestaurant.Services.Contracts</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DAL\Context.Contracts\Context.Contracts.csproj" />
+    <ProjectReference Include="..\DAL\Context.Repository.Contracts\Context.Repository.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
