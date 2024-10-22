@@ -16,6 +16,8 @@ using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServi
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts;
 using Swashbuckle.AspNetCore.Annotations;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServices.OpenXML.Excel;
+using System.Net.Http;
+using DocumentFormat.OpenXml.Vml.Office;
 
 namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
 {
@@ -28,6 +30,7 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
     public class PurchaseFormController : ControllerBase
     {
         private readonly IPurchaseFormService purchaseFormService;
+        private readonly IMerchandiseService merchandiseService;
         private readonly IPurchasingValidateService purchasingValidateService;
         private readonly IExcelTableService excelTableService;
         private readonly IMapper mapper;
@@ -38,12 +41,14 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         public PurchaseFormController(IPurchaseFormService purchaseFormService
             , IMapper mapper
             , IPurchasingValidateService purchasingValidateService
-            , IExcelTableService excelTableService)
+            , IExcelTableService excelTableService,
+            IMerchandiseService merchandiseService)
         {
             this.purchaseFormService = purchaseFormService;
             this.mapper = mapper;
             this.purchasingValidateService = purchasingValidateService;
             this.excelTableService = excelTableService;
+            this.merchandiseService = merchandiseService;
         }
 
         /// <summary>
@@ -60,6 +65,19 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         }
 
         /// <summary>
+        /// Получает форму закупки со всеми связями по идентификатору
+        /// </summary>
+        [HttpGet("GetPurchaseFormWithAllLinks{id:guid}")]
+        [ProducesResponseType(typeof(PurchaseFormResponseModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiExeptionDetails), StatusCodes.Status404NotFound)]
+        [SwaggerOperation(OperationId = "GetPurchaseFormWithAllLinksById")]
+        public async Task<IActionResult> GetWithAllLinks([FromRoute] Guid id, CancellationToken token)
+        {
+            var result = await purchaseFormService.GetWithAllLinksAsync(id, token);
+            return Ok(mapper.Map<PurchaseFormResponseModel>(result));
+        }
+
+        /// <summary>
         /// Получает список всех форм закупок
         /// </summary>
         [HttpGet("getAll")]
@@ -68,6 +86,18 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         public async Task<IActionResult> GetAll(CancellationToken token)
         {
             var result = await purchaseFormService.GetAllAsync(token);
+            return Ok(mapper.Map<IEnumerable<PurchaseFormResponseModel>>(result));
+        }
+
+        /// <summary>
+        /// Получает список всех форм закупок с их связями
+        /// </summary>
+        [HttpGet("GetAllWithAllLinks")]
+        [ProducesResponseType(typeof(IEnumerable<PurchaseFormResponseModel>), StatusCodes.Status200OK)]
+        [SwaggerOperation(OperationId = "GetAllPurchaseFormsWithAllLinks")]
+        public async Task<IActionResult> GetAllWithAllLinks(CancellationToken token)
+        {
+            var result = await purchaseFormService.GetAllWithAllLinksAsync(token);
             return Ok(mapper.Map<IEnumerable<PurchaseFormResponseModel>>(result));
         }
 
@@ -96,6 +126,12 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         {
             var model = mapper.Map<PurchaseFormModel>(request);
             await purchasingValidateService.ValidateAsync(model, token);
+            for(var i = 0; i < model.PurchasedMerchandises.Count; i++)
+            {
+                var merchendise = model.PurchasedMerchandises.ElementAt(i);
+                merchendise.PurchaseForm = model;
+                await merchandiseService.UpdateAsync(merchendise, token);
+            }
             var result = await purchaseFormService.UpdateAsync(model, token);
             return Ok(mapper.Map<PurchaseFormResponseModel>(result));
         }
@@ -126,6 +162,12 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
             var model = mapper.Map<PurchaseFormBaseModel>(request);
             await purchasingValidateService.ValidateAsync(model, token);
             var result = await purchaseFormService.AddAsync(model, token);
+            for (var i = 0; i < model.PurchasedMerchandises.Count; i++)
+            {
+                var merchendise = model.PurchasedMerchandises.ElementAt(i);
+                merchendise.PurchaseForm = result;
+                await merchandiseService.UpdateAsync(merchendise, token);
+            }
             return Ok(mapper.Map<PurchaseFormResponseModel>(result));
         }
 
@@ -145,22 +187,18 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         /// Возвращает Excel таблицу закупочного акта
         /// </summary>
         [HttpGet("ExportToExcelTable:{id:guid}")]
-        [ProducesResponseType(typeof(File), StatusCodes.Status200OK)]
+        [Produces("application/octet-stream")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiExeptionDetails), StatusCodes.Status404NotFound)]
         [SwaggerOperation(OperationId = "ExportPurchaseFormToExcelTable")]
         public async Task<IActionResult> ExportToExcelTable([FromRoute] Guid id, CancellationToken token)
         {
-            byte[] result;
-            using(var memoryStream = new MemoryStream())
-            {
-                await excelTableService.ExportPurchasingFormInTableAsync(memoryStream, id, token);
+            var result = await excelTableService.ExportPurchasingFormInTableAsync(id, token);
+            
+            result.Position = 0;
 
-                memoryStream.Position = 0;
-
-                result = memoryStream.ToArray();
-            }
-            return File(result, 
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", 
+            return File(result,
+                "application/octet-stream", 
                 $"PurchaseFormExcelTable{id:N}.xlsx");
         }
     }

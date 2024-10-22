@@ -1,0 +1,105 @@
+﻿<h3>EditMerchandise</h3>
+@page "/MainMerchandise/EditMerchandise/{id:guid}"
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+@using System.Threading
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.RequestModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.ResponceModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Text.Json
+
+<PageTitle>Редактирование Товара</PageTitle>
+
+<h3>Редактирование Товара</h3>
+
+<EditForm Model="entity" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator Validator="validationRules" />
+
+    <div class="form-group">
+        <label for="Name">Название, характеристика:</label>
+        <InputText id="Name" @bind-Value="entity.Name" class="form-control" />
+        <ValidationMessage For="@(() => entity.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Count">Количество товара:</label>
+        <InputNumber id="Count" @bind-Value="entity.Count" class="form-control" />
+        <ValidationMessage For="@(() => entity.Count)" />
+    </div>
+
+    <div class="form-group">
+        <label for="MerchandiseKey">Код товара:</label>
+        <InputNumber id="MerchandiseKey" @bind-Value="entity.MerchandiseKey" class="form-control" />
+        <ValidationMessage For="@(() => entity.MerchandiseKey)" />
+    </div>
+
+    <div class="form-group">
+        <label for="MeasurementUnitSelection">Выберите единицу измерения:</label>
+        <select id="MeasurementUnitSelection" class="form-control" @bind:after="MeasurementUnitChanged" @bind="selectedMeasurementUnitId">
+            @foreach (var measurementUnit in measurementUnits)
+            {
+                <option value="@measurementUnit.Id">@measurementUnit.Name</option>
+            }
+        </select>
+        <ValidationMessage For="@(() => entity.MeasurementUnitId)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Price">Цена товара:</label>
+        <InputNumber id="Price" @bind-Value="entity.Price" class="form-control" />
+        <ValidationMessage For="@(() => entity.Price)" />
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private MerchandiseResponseModel entity = new();
+    private MerchandiseResponseModelValidator validationRules = new MerchandiseResponseModelValidator();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    private ICollection<MeasurementUnitResponseModel> measurementUnits = new List<MeasurementUnitResponseModel>();
+
+    private Guid selectedMeasurementUnitId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var merchandise = await PurchasingClient.GetMerchandiseByIdAsync(id, cancellationTokenSource.Token);
+
+        selectedMeasurementUnitId = merchandise.MeasurementUnitId;
+
+        measurementUnits = await PurchasingClient.GetAllMeasurementUnitsAsync(cancellationTokenSource.Token);
+
+        merchandise.MeasurementUnit = measurementUnits.FirstOrDefault(x => x.Id == merchandise.MeasurementUnitId);
+        entity = merchandise;
+    }
+
+    private async Task HandleSubmit()
+    {
+        var validationResult = validationRules.Validate(entity);
+        if (validationResult.IsValid)
+        {
+            await PurchasingClient.UpdateMerchandiseAsync(entity, cancellationTokenSource.Token);
+            NavigationManager.NavigateTo("/MainMerchandise");
+        }
+    }
+
+    private void MeasurementUnitChanged()
+    {
+        entity.MeasurementUnitId = selectedMeasurementUnitId;
+        entity.MeasurementUnit = measurementUnits.FirstOrDefault(m => m.Id == selectedMeasurementUnitId);
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/MainMerchandise");
+    }
+}

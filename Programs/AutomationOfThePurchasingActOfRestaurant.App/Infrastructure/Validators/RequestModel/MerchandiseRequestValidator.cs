@@ -28,5 +28,9 @@ public class MerchandiseRequestValidator : AbstractValidator<MerchandiseRequest>
         RuleFor(x => x.Count)
             .GreaterThan(0)
             .WithMessage("Количество товара должно быть больше 0");
+
+        RuleFor(x => x.Price)
+            .NotNull()
+            .WithMessage("Цена не указана");
     }
 }

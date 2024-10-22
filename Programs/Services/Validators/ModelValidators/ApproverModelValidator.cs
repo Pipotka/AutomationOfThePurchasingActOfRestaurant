@@ -1,4 +1,5 @@
-﻿using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models;
+﻿using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
+using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models.BaseModels;
 using FluentValidation;
 using System;
@@ -32,9 +33,11 @@ public class ApproverModelValidator : AbstractValidator<ApproverModel>
         RuleFor(x => x.PositionId)
             .NotEqual(Guid.Empty)
             .WithMessage("Должность не указана");
-        RuleFor(x => x.SignatureId)
-            .NotEqual(Guid.Empty)
-            .WithMessage("Подпись не указана");
+        RuleFor(x => x.SignatureDecryption)
+            .NotEmpty()
+            .WithMessage("Необходима расшифровка подписи")
+            .Matches(Approver.RegularExpressionForSignatureDecryption)
+            .WithMessage("Неправильная расшифровка подписи");
         RuleFor(x => x.Id)
             .NotEqual(Guid.Empty)
             .WithMessage("Id сущности не указан");

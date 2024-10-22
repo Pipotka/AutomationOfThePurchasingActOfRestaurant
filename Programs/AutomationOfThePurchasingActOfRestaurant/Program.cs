@@ -12,10 +12,8 @@ using Company.AutomationOfThePurchasingActOfRestaurant.Services.AutoMapper;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServices.ModelServices;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServices.OpenXML.Excel;
-using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServices.Utilities;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.ModelServices;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.OpenXML.Excel;
-using Company.AutomationOfThePurchasingActOfRestaurant.Services.Utilities.Image;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json.Serialization;
@@ -83,14 +81,9 @@ builder.Services.AddScoped<IEmployeePositionService, EmployeePositionService>();
 builder.Services.AddScoped<IFormKeyService, FormKeyService>();
 builder.Services.AddScoped<IMeasurementUnitService, MeasurementUnitService>();
 builder.Services.AddScoped<IMerchandiseService, MerchandiseService>();
-builder.Services.AddScoped<IMerchandisePriceService, MerchandisePriceService>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 builder.Services.AddScoped<IPurchaseFormService, PurchaseFormService>();
-builder.Services.AddScoped<ISignatureService, SignatureService>();
 builder.Services.AddScoped<ISupplierService, SupplierService>();
-
-builder.Services.AddScoped<IImageCreatorService, ImageCreatorService>();
-builder.Services.AddScoped<IImageEditorService, ImageEditorService>();
 
 builder.Services.AddScoped<IExcelTableService, ExcelTableService>();
 
@@ -129,10 +122,6 @@ builder.Services.AddScoped<IMerchandiseWriteRepository,
     MerchandiseWriteRepository>();
 builder.Services.AddScoped<IMerchandiseReadRepository,
     MerchandiseReadRepository>();
-builder.Services.AddScoped<IMerchandisePriceWriteRepository,
-    MerchandisePriceWriteRepository>();
-builder.Services.AddScoped<IMerchandisePriceReadRepository,
-    MerchandisePriceReadRepository>();
 builder.Services.AddScoped<IOrganizationWriteRepository,
     OrganizationWriteRepository>();
 builder.Services.AddScoped<IOrganizationReadRepository,
@@ -141,10 +130,6 @@ builder.Services.AddScoped<IPurchaseFormWriteRepository,
     PurchaseFormWriteRepository>();
 builder.Services.AddScoped<IPurchaseFormReadRepository,
     PurchaseFormReadRepository>();
-builder.Services.AddScoped<ISignatureWriteRepository,
-    SignatureWriteRepository>();
-builder.Services.AddScoped<ISignatureReadRepository,
-    SignatureReadRepository>();
 builder.Services.AddScoped<ISupplierWriteRepository,
     SupplierWriteRepository>();
 builder.Services.AddScoped<ISupplierReadRepository,

@@ -25,11 +25,6 @@ public class PurchaseFormConfiguration : IEntityTypeConfiguration<PurchaseForm>
             .HasForeignKey(p => p.ApprovingOfficerId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(pf => pf.OfficerSignature)
-            .WithMany(s => s.purchaseForms)
-            .HasForeignKey(p => p.OfficerSignatureId)
-            .OnDelete(DeleteBehavior.NoAction);
-
         builder.HasOne(p => p.ProcurementSpecialist)
             .WithMany(pr => pr.PurchaseForms)
             .HasForeignKey(p => p.ProcurementSpecialistId)
@@ -41,12 +36,8 @@ public class PurchaseFormConfiguration : IEntityTypeConfiguration<PurchaseForm>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasMany(p => p.PurchasedMerchandises)
-            .WithMany(m => m.PurchaseForms);
-
-        builder.HasMany(p => p.Prices)
-            .WithMany(mp => mp.PurchaseForms);
-
-        builder.HasOne(pf => pf.OfficerSignature)
-            .WithMany(s => s.purchaseForms);
+            .WithOne(m => m.PurchaseForm)
+            .HasForeignKey(p => p.PurchaseFormId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

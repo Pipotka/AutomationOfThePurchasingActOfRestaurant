@@ -42,15 +42,7 @@ public interface IPurchasingFormContext
     /// </summary>
     public IQueryable<Organization> Organizations { get; }
     /// <summary>
-    /// Таблица подписей
-    /// </summary>
-    public IQueryable<Signature> Signatures { get; }
-    /// <summary>
     /// Таблица поставщиков
     /// </summary>
     public IQueryable<Supplier> Suppliers { get; }
-    /// <summary>
-    /// Таблица цен товаров
-    /// </summary>
-    public IQueryable<MerchandisePrice> MerchandisePrices { get; }
 }

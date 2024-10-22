@@ -37,7 +37,7 @@ public class MerchandiseReadRepository : IMerchandiseReadRepository
         => reader.Read<Merchandise>()
         .NotDeleted()
                  .OrderBy(m => m.Id)
-                 .Include(m => m.Prices)
+                 .Include(m => m.MeasurementUnit)
                  .ToListAsync(token);
 
     /// <summary>
@@ -47,7 +47,6 @@ public class MerchandiseReadRepository : IMerchandiseReadRepository
         => reader.Read<Merchandise>()
             .NotDeleted()
             .Where(m => m.Id == id)
-            .Include(m => m.Prices)
             .FirstOrDefaultAsync(token);
 
     /// <summary>

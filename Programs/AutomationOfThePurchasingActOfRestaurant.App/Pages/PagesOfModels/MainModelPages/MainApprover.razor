@@ -1,0 +1,104 @@
+﻿@page "/MainApprover"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Reflection
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@implements IDisposable
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Главная. Утверждающие</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <button class="btn btn-primary" @onclick="AddApprover">
+        <i class="fas fa-plus"></i> Добавить Утверждающего
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Отчество</th>
+            <th>
+                Должность
+            </th>
+            <th>
+                Расшифровка подписи
+            </th>
+            <th>Действия</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                    <td>@(item.Patronymic == string.Empty ? "Нет" : item.Patronymic)</td>
+                    <td>
+                        @item.Position.Name
+                    </td>
+                    <td>
+                        @item.SignatureDecryption
+                    </td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private ICollection<ApproverResponseModel>? items;
+
+    private void AddApprover()
+    {
+        NavigationManager.NavigateTo("/MainApprover/CreateApprover");
+    }
+
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainApprover/EditApprover/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот товар?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteApproverAsync(id, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == id);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllApproversWithAllLinksAsync(cancellationTokenSource.Token);
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

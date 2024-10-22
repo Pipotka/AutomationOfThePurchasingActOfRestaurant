@@ -22,8 +22,10 @@ public class ApproverRequestValidator : AbstractValidator<ApproverRequest>
         RuleFor(x => x.PositionId)
             .NotEqual(Guid.Empty)
             .WithMessage("Должность не указана");
-        RuleFor(x => x.SignatureId)
-            .NotEqual(Guid.Empty)
-            .WithMessage("Подпись не указана");
+        RuleFor(x => x.SignatureDecryption)
+            .NotEmpty()
+            .WithMessage("Необходима расшифровка подписи")
+            .Matches(@"^[A-ZА-Я]\.([A-ZА-Я]\.)? [A-ZА-Я][a-zа-я]*$")
+            .WithMessage("Неправильная расшифровка подписи.\nПример расшифровки с отчеством: И.И. Иванов\nПример расшифровки без отчества: И. Иванов");
     }
 }

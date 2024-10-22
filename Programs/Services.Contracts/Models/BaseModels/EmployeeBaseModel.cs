@@ -31,5 +31,5 @@ public class EmployeeBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="Employee.Position" path="/summary"/>
     /// </summary>
-    public EmployeePositionBaseModel Position { get; set; }
+    public EmployeePositionModel Position { get; set; }
 }

@@ -27,10 +27,8 @@ public class PurchasingValidateService : IPurchasingValidateService
         validators.Add(typeof(FormKeyBaseModel), new FormKeyBaseModelValidator());
         validators.Add(typeof(MeasurementUnitBaseModel), new MeasurementUnitBaseModelValidator());
         validators.Add(typeof(MerchandiseBaseModel), new MerchandiseBaseModelValidator());
-        validators.Add(typeof(MerchandisePriceBaseModel), new MerchandisePriceBaseModelValidator());
         validators.Add(typeof(OrganizationBaseModel), new OrganizationBaseModelValidator());
         validators.Add(typeof(PurchaseFormBaseModel), new PurchaseFormBaseModelValidator());
-        validators.Add(typeof(SignatureBaseModel), new SignatureBaseModelValidator());
         validators.Add(typeof(SupplierBaseModel), new SupplierBaseModelValidator());
 
         validators.Add(typeof(ApproverModel), new ApproverModelValidator());
@@ -39,10 +37,8 @@ public class PurchasingValidateService : IPurchasingValidateService
         validators.Add(typeof(FormKeyModel), new FormKeyModelValidator());
         validators.Add(typeof(MeasurementUnitModel), new MeasurementUnitModelValidator());
         validators.Add(typeof(MerchandiseModel), new MerchandiseModelValidator());
-        validators.Add(typeof(MerchandisePriceModel), new MerchandisePriceModelValidator());
         validators.Add(typeof(OrganizationModel), new OrganizationModelValidator());
         validators.Add(typeof(PurchaseFormModel), new PurchaseFormModelValidator());
-        validators.Add(typeof(SignatureModel), new SignatureModelValidator());
         validators.Add(typeof(SupplierModel), new SupplierModelValidator());
     }
 

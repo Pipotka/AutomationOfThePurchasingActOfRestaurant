@@ -32,11 +32,7 @@ public class ApproverRequest
     /// </summary>
     public EmployeePositionResponseModel Position { get; set; }
     /// <summary>
-    /// <see cref="SignatureRequest"/> Id
+    /// <inheritdoc cref="ApproverBaseModel.SignatureDecryption" path="/summary"/>
     /// </summary>
-    public Guid SignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="ApproverBaseModel.Signature" path="/summary"/>
-    /// </summary>
-    public SignatureResponseModel Signature { get; set; }
+    public string SignatureDecryption { get; set; }
 }

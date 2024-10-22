@@ -10,16 +10,14 @@ public class MerchandiseConfiguration : IEntityTypeConfiguration<Merchandise>
     {
         builder.HasKey(m => m.Id);
 
-        builder.HasMany(m => m.PurchaseForms)
-            .WithMany(p => p.PurchasedMerchandises);
+        builder.HasOne(m => m.PurchaseForm)
+            .WithMany(p => p.PurchasedMerchandises)
+            .HasForeignKey(m => m.PurchaseFormId)
+            .OnDelete(DeleteBehavior.NoAction);
+
         builder.HasOne(m => m.MeasurementUnit)
             .WithMany(mu => mu.Merchandises)
             .HasForeignKey(m => m.MeasurementUnitId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.HasMany(m => m.Prices)
-            .WithOne(pr => pr.Merchandise)
-            .HasForeignKey(mp => mp.MerchandiseId)
             .OnDelete(DeleteBehavior.NoAction);
     }
 }

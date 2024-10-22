@@ -31,6 +31,16 @@ public class EmployeeReadRepository : IEmployeeReadRepository
         .ToListAsync(token);
 
     /// <summary>
+    /// Получает список всех сотрудников с их связями
+    /// </summary>
+    public Task<List<Employee>> GetAllWithLinksAsync(CancellationToken token)
+        => reader.Read<Employee>()
+        .NotDeleted()
+        .OrderBy(e => e.LastName)
+        .Include(e => e.Position)
+        .ToListAsync(token);
+
+    /// <summary>
     /// Получает сотрудника по идентификатору
     /// </summary>
     public Task<Employee?> GetAsync(Guid id, CancellationToken token)

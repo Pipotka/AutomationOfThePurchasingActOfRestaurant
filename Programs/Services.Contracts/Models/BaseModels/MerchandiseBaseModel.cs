@@ -9,9 +9,13 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Mo
 public class MerchandiseBaseModel : IBaseEntityModel
 {
     /// <summary>
-    /// <inheritdoc cref="Merchandise.PurchaseForms" path="/summary"/>
+    /// <see cref="PurchaseForm"/> Id
     /// </summary>
-    public ICollection<PurchaseFormBaseModel> PurchaseForms { get; set; } = new List<PurchaseFormBaseModel>();
+    public Guid? PurchaseFormId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="Merchandise.PurchaseForm" path="/summary"/>
+    /// </summary>
+    public PurchaseFormModel? PurchaseForm { get; set; }
     /// <summary>
     /// <inheritdoc cref="Merchandise.Name" path="/summary"/>
     /// </summary>
@@ -27,13 +31,13 @@ public class MerchandiseBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="Merchandise.MeasurementUnit" path="/summary"/>
     /// </summary>
-    public MeasurementUnitBaseModel MeasurementUnit { get; set; }
+    public MeasurementUnitModel MeasurementUnit { get; set; }
     /// <summary>
     /// <inheritdoc cref="Merchandise.Count" path="/summary"/>
     /// </summary>
     public int Count { get; set; }
     /// <summary>
-    /// <inheritdoc cref="Merchandise.Prices" path="/summary"/>
+    /// <inheritdoc cref="Merchandise.Price" path="/summary"/>
     /// </summary>
-    public ICollection<MerchandisePriceBaseModel> Prices { get; set; }
+    public double Price { get; set; } = 0;
 }

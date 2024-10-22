@@ -14,16 +14,11 @@ public class FormKeyResponseModel
     /// </summary>
     public Guid Id { get; set; }
     /// <summary>
-    /// <see cref="PurchaseFormResponseModel"/> Id
+    /// <inheritdoc cref="FormKeyRequest.PurchaseFormId" path="/summary"/>
     /// </summary>
     public Guid? PurchaseFormId { get; set; }
     /// <summary>
-    /// <inheritdoc cref="FormKeyRequest.PurchaseForm" path="/summary"/>
-    /// </summary>
-    [JsonProperty(Required = Required.AllowNull)]
-    public PurchaseFormResponseModel? PurchaseForm { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="FormKeyFormKeyRequestBaseModel.OKUD" path="/summary"/>
+    /// <inheritdoc cref="FormKeyRequest.OKUD" path="/summary"/>
     /// </summary>
     public string OKUD { get; set; }
     /// <summary>

@@ -99,11 +99,33 @@ public class PurchaseFormService : IPurchaseFormService
     }
 
     /// <summary>
+    /// Возвращает все закупочный акт с их связями
+    /// </summary>
+    public async Task<List<PurchaseFormModel>> GetAllWithAllLinksAsync(CancellationToken token)
+    {
+        var result = await purchaseFormReadRepository.GetAllWithAllLinksAsync(token);
+        return mapper.Map<List<PurchaseFormModel>>(result);
+    }
+
+    /// <summary>
     /// Возвращает закупочный акт по Id
     /// </summary>
     public async Task<PurchaseFormModel> GetAsync(Guid id, CancellationToken token)
     {
         var result = await purchaseFormReadRepository.GetAsync(id, token);
+        if (result == null)
+        {
+            throw new PurchasingEntityNotFoundByIdServiceExeption<PurchaseForm>(id);
+        }
+        return mapper.Map<PurchaseFormModel>(result);
+    }
+
+    /// <summary>
+    /// Возвращает закупочный акт со всеми связями по Id
+    /// </summary>
+    public async Task<PurchaseFormModel> GetWithAllLinksAsync(Guid id, CancellationToken token)
+    {
+        var result = await purchaseFormReadRepository.GetWithAllLinksAsync(id, token);
         if (result == null)
         {
             throw new PurchasingEntityNotFoundByIdServiceExeption<PurchaseForm>(id);

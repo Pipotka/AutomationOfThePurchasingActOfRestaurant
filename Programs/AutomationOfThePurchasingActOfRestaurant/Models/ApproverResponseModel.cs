@@ -14,10 +14,6 @@ public class ApproverResponseModel
     /// </summary>
     public Guid Id { get; set; }
     /// <summary>
-    /// <inheritdoc cref="ApproverRequest.PurchaseForms" path="/summary"/>
-    /// </summary>
-    public ICollection<PurchaseFormResponseModel> PurchaseForms { get; set; } = new List<PurchaseFormResponseModel>();
-    /// <summary>
     /// <inheritdoc cref="ApproverRequest.FirstName" path="/summary"/>
     /// </summary>
     public string FirstName { get; set; }
@@ -38,11 +34,7 @@ public class ApproverResponseModel
     /// </summary>
     public EmployeePositionResponseModel Position { get; set; }
     /// <summary>
-    /// <see cref="SignatureRequest"/> Id
+    /// <inheritdoc cref="ApproverRequest.SignatureDecryption" path="/summary"/>
     /// </summary>
-    public Guid SignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="ApproverRequest.Signature" path="/summary"/>
-    /// </summary>
-    public SignatureResponseModel Signature { get; set; }
+    public string SignatureDecryption { get; set; }
 }

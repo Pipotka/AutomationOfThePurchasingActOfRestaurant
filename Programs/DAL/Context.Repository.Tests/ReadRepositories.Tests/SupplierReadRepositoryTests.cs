@@ -1,5 +1,6 @@
 ﻿using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.Contracts.ReadRepositories;
+using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.Contracts.Sorts;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.ReadRepositories;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Tests;
 using FluentAssertions;
@@ -47,7 +48,7 @@ public class SupplierReadRepositoryTests : PurchasingInMemoryContext
         // assert
         result.Should().NotBeEmpty()
             .And.HaveCount(1)
-            .And.ContainSingle(a => a.Id == supplier.Id);
+            .And.ContainSingle(s => s.Id == supplier.Id);
     }
 
     /// <summary>
@@ -57,8 +58,8 @@ public class SupplierReadRepositoryTests : PurchasingInMemoryContext
     public async Task GetAllShouldReturnOrderedValue()
     {
         // arrange
-        var supplier1 = GetSupplier(a => a.LastName = "Абрамович");
-        var supplier2 = GetSupplier(a => a.LastName = "Якорь");
+        var supplier1 = GetSupplier(s => s.LastName = "Абрамович");
+        var supplier2 = GetSupplier(s => s.LastName = "Якорь");
         await PurchasingContext.AddRangeAsync(supplier1, supplier2);
         await PurchasingContext.SaveChangesAsync();
 
@@ -68,8 +69,8 @@ public class SupplierReadRepositoryTests : PurchasingInMemoryContext
         // assert
         result.Should().NotBeEmpty()
             .And.HaveCount(2)
-            .And.ContainSingle(a => a.Id == supplier1.Id)
-            .And.ContainSingle(a => a.Id == supplier2.Id);
+            .And.ContainSingle(s => s.Id == supplier1.Id)
+            .And.ContainSingle(s => s.Id == supplier2.Id);
         result[0].Id.Should().Be(supplier1.Id);
         result[1].Id.Should().Be(supplier2.Id);
     }
@@ -158,7 +159,7 @@ public class SupplierReadRepositoryTests : PurchasingInMemoryContext
     public async Task GetByLastNameShouldReturnValue()
     {
         // arrange
-        var supplier = GetSupplier(a => a.LastName = "Абдулгаджиев");
+        var supplier = GetSupplier(s => s.LastName = "Абдулгаджиев");
         await PurchasingContext.AddAsync(supplier);
         await PurchasingContext.SaveChangesAsync();
 
@@ -177,7 +178,7 @@ public class SupplierReadRepositoryTests : PurchasingInMemoryContext
     public async Task GetByLastNameShouldReturnNull()
     {
         // arrange
-        var supplier = GetSupplier(a => a.LastName = "Абрамович");
+        var supplier = GetSupplier(s => s.LastName = "Абрамович");
         await PurchasingContext.AddAsync(supplier);
         await PurchasingContext.SaveChangesAsync();
         // act
@@ -185,6 +186,90 @@ public class SupplierReadRepositoryTests : PurchasingInMemoryContext
 
         // assert
         result.Should().BeNull();
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из поставщиков по имени по возрастанию
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnOrderedInAscendingOrderValue()
+    {
+        // arrange
+        var supplier1 = GetSupplier(s => s.LastName = "Абрамов");
+        var supplier2 = GetSupplier(s => s.LastName = "Ярисов");
+        var supplier3 = GetSupplier(s => s.LastName = "Кутузов");
+        await PurchasingContext.AddRangeAsync(supplier1, supplier2, supplier3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await supplierReadRepository.GetPageAsync(SupplierSortBy.LastName, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(3);
+        result[0].Should().BeEquivalentTo(supplier1);
+        result[1].Should().BeEquivalentTo(supplier3);
+        result[2].Should().BeEquivalentTo(supplier2);
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из 2-х поставщиков по имени по возрастанию
+    /// </summary>spaginated page
+    [Fact]
+    public async Task GetPageShouldReturnPageWithPagination()
+    {
+        // arrange
+        var supplier1 = GetSupplier(s => s.LastName = "Абрамов");
+        var supplier2 = GetSupplier(s => s.LastName = "Ярисов");
+        var supplier3 = GetSupplier(s => s.LastName = "Кутузов");
+        await PurchasingContext.AddRangeAsync(supplier1, supplier2, supplier3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await supplierReadRepository.GetPageAsync(SupplierSortBy.LastName, 1, 2, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(2);
+        result[0].Should().BeEquivalentTo(supplier1);
+        result[1].Should().BeEquivalentTo(supplier3);
+    }
+
+    /// <summary>
+    /// Возвращает пустую страницу
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnEmpty()
+    {
+        // act
+        var result = await supplierReadRepository.GetPageAsync(SupplierSortBy.LastName, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из поставщиков по имени по убыванию
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnOrderedInDescendingOrderValue()
+    {
+        // arrange
+        var supplier1 = GetSupplier(x => x.LastName = "Абрамов");
+        var supplier2 = GetSupplier(x => x.LastName = "Ярисов");
+        var supplier3 = GetSupplier(x => x.LastName = "Кутузов");
+        await PurchasingContext.AddRangeAsync(supplier1, supplier2, supplier3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await supplierReadRepository.GetPageAsync(SupplierSortBy.LastNameDesc, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(3);
+        result[0].Should().BeEquivalentTo(supplier2);
+        result[1].Should().BeEquivalentTo(supplier3);
+        result[2].Should().BeEquivalentTo(supplier1);
     }
 
     /// <summary>

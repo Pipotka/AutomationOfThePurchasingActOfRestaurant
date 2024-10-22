@@ -42,7 +42,10 @@ public class ExcelDocumentOperations : IExcelDocumentOperations
         document.WorkbookPart.Workbook = new Workbook();
         document.WorkbookPart.Workbook.AppendChild(new Sheets());
         document.WorkbookPart.AddNewPart<WorkbookStylesPart>();
-        document.WorkbookPart.AddNewPart<WorkbookStylesPart>();
+        document.WorkbookPart.WorkbookStylesPart.Stylesheet = new Stylesheet();
+        document.WorkbookPart.WorkbookStylesPart.Stylesheet.Fonts = new Fonts();
+        document.WorkbookPart.WorkbookStylesPart.Stylesheet.Borders = new Borders();
+        document.WorkbookPart.WorkbookStylesPart.Stylesheet.CellFormats = new CellFormats();
 
         return document;
     }

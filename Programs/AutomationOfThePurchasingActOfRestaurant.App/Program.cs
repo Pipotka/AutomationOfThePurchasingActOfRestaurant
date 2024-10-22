@@ -3,6 +3,7 @@ using Company.AutomationOfThePurchasingActOfRestaurant.Client;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Blazored.FluentValidation;
+using BlazorDownloadFile;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -17,6 +18,7 @@ builder.Services.AddScoped<IPurchasingActOfRestaurantClient>(opt =>
     return new PurchasingActOfRestaurantClient("https://localhost:7120/", httpClient);
 });
 builder.Services.AddHttpClient();
+builder.Services.AddBlazorDownloadFile();
 
 
 await builder.Build().RunAsync();

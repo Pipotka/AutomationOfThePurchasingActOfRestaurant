@@ -1,0 +1,94 @@
+﻿@page "/MainMerchandise"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Товар</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <button class="btn btn-primary" @onclick="AddMerchandise">
+        <i class="fas fa-plus"></i> Добавить Товар
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <th>Название, характеристика товара</th>
+        <th>Код товара</th>
+        <th>Единица измерения</th>
+        <th>Количество</th>
+        <th>Действия</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.MerchandiseKey</td>
+                    <td>@item.MeasurementUnit.Name</td>
+                    <td>@item.Count</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<MerchandiseResponseModel> items = new List<MerchandiseResponseModel>();
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllMerchandisesWithLinksAsync(cancellationTokenSource.Token);
+    }
+
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainMerchandise/EditMerchandise/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот товар?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteMerchandiseAsync(id, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == id);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+    private void AddMerchandise()
+    {
+        NavigationManager.NavigateTo("/MainMerchandise/CreateMerchandise");
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

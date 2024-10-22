@@ -36,14 +36,6 @@ public class PurchaseFormModel : IEntityModel
     /// </summary>
     public ApproverModel ApprovingOfficer { get; set; }
     /// <summary>
-    /// <see cref="OfficerSignature"/> Id
-    /// </summary>
-    public Guid OfficerSignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="PurchaseFormBaseModel.OfficerSignature" path="/summary"/>
-    /// </summary>
-    public SignatureModel OfficerSignature { get; set; }
-    /// <summary>
     /// <inheritdoc cref="PurchaseFormBaseModel.DocumentNumber" path="/summary"/>
     /// </summary>
     public int DocumentNumber { get; set; }
@@ -75,8 +67,4 @@ public class PurchaseFormModel : IEntityModel
     /// <inheritdoc cref="PurchaseFormBaseModel.PurchasedMerchandises" path="/summary"/>
     /// </summary>
     public ICollection<MerchandiseModel> PurchasedMerchandises { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="PurchaseFormBaseModel.Prices" path="/summary"/>
-    /// </summary>
-    public ICollection<MerchandisePriceModel> Prices { get; set; }
 }

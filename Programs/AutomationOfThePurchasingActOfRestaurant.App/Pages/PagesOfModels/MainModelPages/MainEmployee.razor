@@ -1,0 +1,95 @@
+﻿@page "/MainEmployee"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Сотрудники</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <button class="btn btn-primary" @onclick="AddEmployee">
+        <i class="fas fa-plus"></i> Добавить Сотрудника
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <th>Имя</th>
+        <th>Фамилия</th>
+        <th>Отчество</th>
+        <th>Должность</th>
+        <th>Действия</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.FirstName</td>
+                    <td>@item.LastName</td>
+                    <td>@(item.Patronymic == string.Empty ? "Нет" : item.Patronymic)</td>
+                    <td>@item.Position.Name</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+        </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ICollection<EmployeeResponseModel> items = new List<EmployeeResponseModel>();
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllEmployeesWithLinksAsync(cancellationTokenSource.Token);
+    }
+
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainEmployee/EditEmployee/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот товар?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteEmployeeAsync(id, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == id);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+    private void AddEmployee()
+    {
+        NavigationManager.NavigateTo("/MainEmployee/CreateEmployee");
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}
+

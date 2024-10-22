@@ -1,0 +1,97 @@
+﻿@page "/MainMerchandise/CreateMerchandise"
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+@using System.Threading
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.RequestModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Text.Json
+
+<PageTitle>Создание Товара</PageTitle>
+
+<h3>Создание Товара</h3>
+
+<EditForm Model="entity" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator Validator="validationRules" />
+
+    <div class="form-group">
+        <label for="Name">Название, характеристика:</label>
+        <InputText id="Name" @bind-Value="entity.Name" class="form-control" />
+        <ValidationMessage For="@(() => entity.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Count">Количество товара:</label>
+        <InputNumber id="Count" @bind-Value="entity.Count" class="form-control" />
+        <ValidationMessage For="@(() => entity.Count)" />
+    </div>
+
+    <div class="form-group">
+        <label for="MerchandiseKey">Код товара:</label>
+        <InputNumber id="MerchandiseKey" @bind-Value="entity.MerchandiseKey" class="form-control" />
+        <ValidationMessage For="@(() => entity.MerchandiseKey)" />
+    </div>
+
+    <div class="form-group">
+        <label for="MeasurementUnitSelection">Выберите единицу измерения:</label>
+        <select id="MeasurementUnitSelection" class="form-control" @bind:after="MeasurementUnitChanged" @bind="entity.MeasurementUnitId">
+            @foreach (var measurementUnit in measurementUnits)
+            {
+                <option value="@measurementUnit.Id">@measurementUnit.Name</option>
+            }
+        </select>
+        <ValidationMessage For="@(() => entity.MeasurementUnitId)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Price">Цена товара:</label>
+        <InputNumber id="Price" @bind-Value="entity.Price" class="form-control" />
+        <ValidationMessage For="@(() => entity.Price)" />
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Добавить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
+    </div>
+</EditForm>
+
+@code {
+    private MerchandiseRequest entity = new();
+    private MerchandiseRequestValidator validationRules = new MerchandiseRequestValidator();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    private ElementReference priceSelectionLabel;
+
+    private ICollection<MeasurementUnitResponseModel> measurementUnits = new List<MeasurementUnitResponseModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        measurementUnits = await PurchasingClient.GetAllMeasurementUnitsAsync(cancellationTokenSource.Token);
+        entity.MeasurementUnitId = measurementUnits.FirstOrDefault().Id;
+        if (entity.MeasurementUnitId != Guid.Empty)
+        {
+            entity.MeasurementUnit = measurementUnits.FirstOrDefault(m => m.Id == entity.MeasurementUnitId);
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var validationResult = validationRules.Validate(entity);
+        if (validationResult.IsValid)
+        {
+            await PurchasingClient.AddMerchandiseAsync(entity, cancellationTokenSource.Token);
+            NavigationManager.NavigateTo("/MainMerchandise");
+        }
+    }
+
+    private void MeasurementUnitChanged()
+    {
+        entity.MeasurementUnit = measurementUnits.FirstOrDefault(m => m.Id == entity.MeasurementUnitId);
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/MainMerchandise");
+    }
+}

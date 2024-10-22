@@ -282,6 +282,7 @@ public class ApproverReadRepositoryTests : PurchasingInMemoryContext
             FirstName = $"Имя{Guid.NewGuid():N}",
             LastName = $"Фамилия{Guid.NewGuid():N}",
             Patronymic = $"Отчество{Guid.NewGuid():N}",
+            SignatureDecryption = $"Расшифровка подписи:{Guid.NewGuid():N}",
             PositionId = Guid.NewGuid(),
     };
 

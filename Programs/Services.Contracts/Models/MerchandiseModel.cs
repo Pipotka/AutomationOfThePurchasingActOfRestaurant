@@ -13,9 +13,13 @@ public class MerchandiseModel : IEntityModel
     /// </summary>
     public Guid Id { get; set; }
     /// <summary>
-    /// <inheritdoc cref="MerchandiseBaseModel.PurchaseForms" path="/summary"/>
+    /// <see cref="PurchaseForm"/> Id
     /// </summary>
-    public ICollection<PurchaseFormModel> PurchaseForms { get; set; } = new List<PurchaseFormModel>();
+    public Guid? PurchaseFormId { get; set; }
+    /// <summary>
+    /// <inheritdoc cref="MerchandiseBaseModel.PurchaseForm" path="/summary"/>
+    /// </summary>
+    public PurchaseFormModel? PurchaseForm { get; set; }
     /// <summary>
     /// <inheritdoc cref="MerchandiseBaseModel.Name" path="/summary"/>
     /// </summary>
@@ -39,5 +43,5 @@ public class MerchandiseModel : IEntityModel
     /// <summary>
     /// <inheritdoc cref="MerchandiseBaseModel.Prices" path="/summary"/>
     /// </summary>
-    public ICollection<MerchandisePriceModel> Prices { get; set; }
+    public double Price { get; set; } = 0;
 }

@@ -20,7 +20,6 @@ public interface IExcelTableService
     /// <param name="purchaseFormId">
     /// Id закупочного акта, который нужно экспартировать в Excel таблицу
     /// </param>
-    Task ExportPurchasingFormInTableAsync(MemoryStream memoryStream,
-        Guid purchaseFormId,
+    Task<Stream> ExportPurchasingFormInTableAsync(Guid purchaseFormId,
         CancellationToken token);
 }

@@ -1,0 +1,108 @@
+﻿@page "/MainSupplier"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Reflection
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Поставщик</PageTitle>
+<div align="center">
+    <!-- Название сайта с ссылкой на страницу Home -->
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <button class="btn btn-primary" @onclick="AddSupplier">
+        <i class="fas fa-plus"></i> Добавить Поставщика
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <th>
+                Фамилия
+            </th>
+            <th>
+                Имя
+            </th>
+            <th>
+                Отчество
+            </th>
+            <th>
+                Действия
+            </th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>
+                        @(item.LastName)
+                    </td>
+                    <td>
+                        @item.FirstName
+                    </td>
+                    <td>
+                        @(item.Patronymic == string.Empty ? "Нет" : item.Patronymic)
+                    </td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private ICollection<SupplierResponseModel>? items;
+
+    private void AddSupplier()
+    {
+        NavigationManager.NavigateTo("/MainSupplier/CreateSupplier");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllSuppliersAsync(cancellationTokenSource.Token);
+    }
+
+    private async Task HandleActionSelection(string action, Guid supplierId)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainSupplier/EditSupplier/{supplierId}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этого поставщика?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteSupplierAsync(supplierId, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == supplierId);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

@@ -37,11 +37,7 @@ public class ApproverModel : IEntityModel
     /// </summary>
     public EmployeePositionModel Position { get; set; }
     /// <summary>
-    /// <inheritdoc cref="ApproverBaseModel.SignatureId" path="/summary"/>
+    /// <inheritdoc cref="ApproverBaseModel.SignatureDecryption" path="/summary"/>
     /// </summary>
-    public Guid SignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="ApproverBaseModel.Signature" path="/summary"/>
-    /// </summary>
-    public SignatureModel Signature { get; set; }
+    public string SignatureDecryption { get; set; }
 }

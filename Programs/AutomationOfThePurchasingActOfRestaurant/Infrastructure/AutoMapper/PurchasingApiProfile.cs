@@ -25,10 +25,8 @@ public class PurchasingApiProfile : Profile
         CreateMap<FormKeyRequest, FormKeyBaseModel>(MemberList.Destination);
         CreateMap<MeasurementUnitRequest, MeasurementUnitBaseModel>(MemberList.Destination);
         CreateMap<MerchandiseRequest, MerchandiseBaseModel>(MemberList.Destination);
-        CreateMap<MerchandisePriceRequest, MerchandisePriceBaseModel>(MemberList.Destination);
         CreateMap<OrganizationRequest, OrganizationBaseModel>(MemberList.Destination);
         CreateMap<PurchaseFormRequest, PurchaseFormBaseModel>(MemberList.Destination);
-        CreateMap<SignatureRequest, SignatureBaseModel>(MemberList.Destination);
         CreateMap<SupplierRequest, SupplierBaseModel>(MemberList.Destination);
 
         CreateMap<ApproverRequest, ApproverModel>(MemberList.Destination)
@@ -43,28 +41,25 @@ public class PurchasingApiProfile : Profile
             .ForMember(x => x.Id, opt => opt.Ignore());
         CreateMap<MerchandiseRequest, MerchandiseModel>(MemberList.Destination)
             .ForMember(x => x.Id, opt => opt.Ignore());
-        CreateMap<MerchandisePriceRequest, MerchandisePriceModel>(MemberList.Destination)
-            .ForMember(x => x.Id, opt => opt.Ignore());
         CreateMap<OrganizationRequest, OrganizationModel>(MemberList.Destination)
             .ForMember(x => x.Id, opt => opt.Ignore());
         CreateMap<PurchaseFormRequest, PurchaseFormModel>(MemberList.Destination)
             .ForMember(x => x.Id, opt => opt.Ignore());
-        CreateMap<SignatureRequest, SignatureModel>(MemberList.Destination)
-            .ForMember(x => x.Id, opt => opt.Ignore());
         CreateMap<SupplierRequest, SupplierModel>(MemberList.Destination)
             .ForMember(x => x.Id, opt => opt.Ignore());
+
+        CreateMap<MeasurementUnitResponseModel, MeasurementUnitBaseModel>(MemberList.Destination);
+        CreateMap<EmployeePositionResponseModel, EmployeePositionBaseModel>(MemberList.Destination);
 
         CreateMap<ApproverModel, ApproverResponseModel>(MemberList.Destination);
         CreateMap<EmployeeModel, EmployeeResponseModel>(MemberList.Destination);
         CreateMap<EmployeePositionModel, EmployeePositionResponseModel>(MemberList.Destination);
-        CreateMap<FormKeyModel, FormKeyModel>(MemberList.Destination);
+        CreateMap<FormKeyModel, FormKeyResponseModel>(MemberList.Destination);
         CreateMap<MeasurementUnitModel, MeasurementUnitResponseModel>(MemberList.Destination);
         CreateMap<MerchandiseModel, MerchandiseResponseModel>(MemberList.Destination);
-        CreateMap<MerchandisePriceModel, MerchandisePriceResponseModel>(MemberList.Destination);
         CreateMap<OrganizationModel, OrganizationResponseModel>(MemberList.Destination);
         CreateMap<PurchaseFormModel, PurchaseFormResponseModel>(MemberList.Destination)
             .ForMember(x => x.TotalCost, opt => opt.MapFrom(x => x.GetTotalCost()));
-        CreateMap<SignatureModel, SignatureResponseModel>(MemberList.Destination);
         CreateMap<SupplierModel, SupplierResponseModel>(MemberList.Destination);
 
         CreateMap<ApproverResponseModel, ApproverModel>(MemberList.Destination);
@@ -73,10 +68,8 @@ public class PurchasingApiProfile : Profile
         CreateMap<FormKeyResponseModel, FormKeyModel>(MemberList.Destination);
         CreateMap<MeasurementUnitResponseModel, MeasurementUnitModel>(MemberList.Destination);
         CreateMap<MerchandiseResponseModel, MerchandiseModel>(MemberList.Destination);
-        CreateMap<MerchandisePriceResponseModel, MerchandisePriceModel>(MemberList.Destination);
         CreateMap<OrganizationResponseModel, OrganizationModel>(MemberList.Destination);
         CreateMap<PurchaseFormResponseModel, PurchaseFormModel>(MemberList.Destination);
-        CreateMap<SignatureResponseModel, SignatureModel>(MemberList.Destination);
         CreateMap<SupplierResponseModel, SupplierModel>(MemberList.Destination);
 
 

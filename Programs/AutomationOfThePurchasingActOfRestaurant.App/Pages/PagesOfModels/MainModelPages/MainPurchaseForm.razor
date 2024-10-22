@@ -1,0 +1,122 @@
+﻿@page "/MainPurchaseForm"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Reflection
+@using BlazorDownloadFile;
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IBlazorDownloadFileService blazorDownloadFileService
+@implements IDisposable
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Главная. Закупочные акты</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <button class="btn btn-primary" @onclick="AddPurchaseForm">
+        <i class="fas fa-plus"></i> Добавить Закупочный акт
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <th>Адрес закупки</th>
+        <th>Название организации-заказчика</th>
+        <th>Дата составления документа</th>
+        <th>Номер документа</th>
+        <th>ОКПО</th>
+        <th>ОКДП</th>
+        <th>ОКУД</th>
+        <th>ИНН</th>
+        <th>Общая цена</th>
+        <th>Действия</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.AddressOfPurchase</td>
+                    <td>@item.SponsorOrganization.Name</td>
+                    <td>@item.DocumentDate.Date.ToShortDateString()</td>
+                    <td>@item.DocumentNumber</td>
+                    <td>@item.FormKey.Okpo</td>
+                    <td>@item.FormKey.Okdp</td>
+                    <td>@item.FormKey.Okud</td>
+                    <td>@item.FormKey.Tin</td>
+                    <td>@item.TotalCost.ToString()</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="ExcelExport">Экспорт в Excel</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    private ICollection<PurchaseFormResponseModel>? items;
+
+    private void AddPurchaseForm()
+    {
+        NavigationManager.NavigateTo("/MainPurchaseForm/CreatePurchaseForm");
+    }
+
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "ExcelExport":
+                var file = await PurchasingClient.ExportPurchaseFormToExcelTableAsync(id, cancellationTokenSource.Token);
+                if (file != null)
+                {
+                    var fileBytes = ((MemoryStream)file.Stream).ToArray();
+
+                    var fileName = $"PurchaseFormExcelTable{id:N}.xlsx";
+
+                    await blazorDownloadFileService.DownloadFile(fileName, fileBytes,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+                }
+                break;
+
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainPurchaseForm/EditPurchaseForm/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этот товар?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeletePurchaseFormAsync(id, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == id);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllPurchaseFormsWithAllLinksAsync(cancellationTokenSource.Token);
+        Console.WriteLine($"Количество элементов = {items.Count}");
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource.Cancel();
+        cancellationTokenSource.Dispose();
+    }
+}

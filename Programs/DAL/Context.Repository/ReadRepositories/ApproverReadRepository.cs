@@ -49,6 +49,16 @@ public class ApproverReadRepository : IApproverReadRepository
         .ToListAsync(token);
 
     /// <summary>
+    /// Получает список всех утверждающих с их связями
+    /// </summary>
+    public Task<List<Approver>> GetAllWithAllLinksAsync(CancellationToken token)
+        => reader.Read<Approver>()
+        .NotDeleted()
+        .Include(a => a.Position)
+        .OrderBy(a => a.LastName)
+        .ToListAsync(token);
+
+    /// <summary>
     /// Проверяет, существует ли утверждающий
     /// </summary>
     public bool IsExist(Approver approver)

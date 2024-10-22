@@ -21,10 +21,8 @@ public class PurchasingProfile : Profile
         CreateMap<FormKey, FormKeyModel>(MemberList.Destination);
         CreateMap<MeasurementUnit, MeasurementUnitModel>(MemberList.Destination);
         CreateMap<Merchandise, MerchandiseModel>(MemberList.Destination);
-        CreateMap<MerchandisePrice, MerchandisePriceModel>(MemberList.Destination);
         CreateMap<Organization, OrganizationModel>(MemberList.Destination);
         CreateMap<PurchaseForm, PurchaseFormModel>(MemberList.Destination);
-        CreateMap<Signature, SignatureModel>(MemberList.Destination);
         CreateMap<Supplier, SupplierModel>(MemberList.Destination);
 
         CreateMap<ApproverBaseModel, Approver>(MemberList.Destination);
@@ -33,10 +31,8 @@ public class PurchasingProfile : Profile
         CreateMap<FormKeyBaseModel, FormKey>(MemberList.Destination);
         CreateMap<MeasurementUnitBaseModel, MeasurementUnit>(MemberList.Destination);
         CreateMap<MerchandiseBaseModel, Merchandise>(MemberList.Destination);
-        CreateMap<MerchandisePriceBaseModel, MerchandisePrice>(MemberList.Destination);
         CreateMap<OrganizationBaseModel, Organization>(MemberList.Destination);
         CreateMap<PurchaseFormBaseModel, PurchaseForm>(MemberList.Destination);
-        CreateMap<SignatureBaseModel, Signature>(MemberList.Destination);
         CreateMap<SupplierBaseModel, Supplier>(MemberList.Destination);
 
 
@@ -65,14 +61,10 @@ public class PurchasingProfile : Profile
         CreateMap<MerchandiseModel, Merchandise>(MemberList.Destination)
             .ForMember(x => x.Name, opt => opt.MapFrom(x => x.Name.Trim()));
 
-        CreateMap<MerchandisePriceModel, MerchandisePrice>(MemberList.Destination);
-
         CreateMap<OrganizationModel, Organization>(MemberList.Destination)
             .ForMember(x => x.Name, opt => opt.MapFrom(x => x.Name.Trim()));
 
         CreateMap<PurchaseFormModel, PurchaseForm>(MemberList.Destination);
-
-        CreateMap<SignatureModel, Signature>(MemberList.Destination);
 
         CreateMap<SupplierModel, Supplier>(MemberList.Destination)
             .ForMember(x => x.FirstName, opt => opt.MapFrom(x => x.FirstName.Trim()))

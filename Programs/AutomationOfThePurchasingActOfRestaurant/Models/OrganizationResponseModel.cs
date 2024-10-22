@@ -13,10 +13,6 @@ public class OrganizationResponseModel
     /// </summary>
     public Guid Id { get; set; }
     /// <summary>
-    /// <inheritdoc cref="OrganizationRequest.PurchaseForms" path="/summary"/>
-    /// </summary>
-    public ICollection<PurchaseFormResponseModel> PurchaseForms { get; set; } = new List<PurchaseFormResponseModel>();
-    /// <summary>
     /// <inheritdoc cref="OrganizationRequest.Name" path="/summary"/>
     /// </summary>
     public string Name { get; set; }

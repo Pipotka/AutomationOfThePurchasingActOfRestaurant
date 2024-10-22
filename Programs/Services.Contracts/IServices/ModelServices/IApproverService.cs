@@ -13,4 +13,8 @@ public interface IApproverService : IBaseEntityService<ApproverModel, ApproverBa
     /// Получает утверждающего по фамилии
     /// </summary>
     Task<ApproverModel?> GetByLastNameAsync(string lastName, CancellationToken token);
+    /// <summary>
+    /// Возвращает всех утверждающих с их связями
+    /// </summary>
+    Task<List<ApproverModel>> GetAllWithAllLinksAsync(CancellationToken token);
 }

@@ -13,10 +13,6 @@ public class SupplierResponseModel
     /// </summary>
     public Guid Id { get; set; }
     /// <summary>
-    /// <inheritdoc cref="SupplierRequest.PurchaseForms" path="/summary"/>
-    /// </summary>
-    public ICollection<PurchaseFormResponseModel> PurchaseForms { get; set; } = new List<PurchaseFormResponseModel>();
-    /// <summary>
     /// <inheritdoc cref="SupplierRequest.FirstName" path="/summary"/>
     /// </summary>
     public string FirstName { get; set; }

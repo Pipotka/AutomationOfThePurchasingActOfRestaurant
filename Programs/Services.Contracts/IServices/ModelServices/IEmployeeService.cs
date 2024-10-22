@@ -13,4 +13,8 @@ public interface IEmployeeService : IBaseEntityService<EmployeeModel, EmployeeBa
     /// Получает сотрудника по фамилии
     /// </summary>
     Task<EmployeeModel?> GetByLastNameAsync(string lastName, CancellationToken token);
+    /// <summary>
+    /// Возвращает всех сотрудников с их связями
+    /// </summary>
+    Task<List<EmployeeModel>> GetAllWithLinksAsync(CancellationToken token);
 }

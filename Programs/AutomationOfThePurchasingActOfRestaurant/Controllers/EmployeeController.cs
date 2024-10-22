@@ -71,6 +71,19 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         }
 
         /// <summary>
+        /// Получает список всех сотрудников с их связями
+        /// </summary>
+        [HttpGet("getAllWithLinks")]
+        [ProducesResponseType(typeof(IEnumerable<EmployeeResponseModel>), StatusCodes.Status200OK)]
+        [SwaggerOperation(OperationId = "GetAllEmployeesWithLinks")]
+        public async Task<IActionResult> GetAllWithLinks(CancellationToken token)
+        {
+            var result = await employeeService.GetAllWithLinksAsync(token);
+
+            return Ok(mapper.Map<IEnumerable<EmployeeResponseModel>>(result));
+        }
+
+        /// <summary>
         /// Получает сотрудника по имени
         /// </summary>
         [HttpGet("byLastName")]

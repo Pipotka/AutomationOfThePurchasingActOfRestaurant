@@ -1,0 +1,94 @@
+﻿@page "/MainEmployee/EditEmployee/{id:guid}"
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime;
+@using System.Threading
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.RequestModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.App.Infrastructure.Validators.ResponceModel
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@using System.Text.Json
+
+<PageTitle>Изменение Сотрудника</PageTitle>
+
+<h3>Изменение Сотрудника</h3>
+
+<EditForm Model="entity" OnValidSubmit="HandleSubmit">
+    <FluentValidationValidator Validator="validationRules" />
+
+    <div class="form-group">
+        <label for="FirstName">Имя:</label>
+        <InputText id="FirstName" @bind-Value="entity.FirstName" class="form-control" />
+        <ValidationMessage For="@(() => entity.FirstName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="LastName">Фамилия:</label>
+        <InputText id="LastName" @bind-Value="entity.LastName" class="form-control" />
+        <ValidationMessage For="@(() => entity.LastName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="Patronymic">Отчество:</label>
+        <InputText id="Patronymic" @bind-Value="entity.Patronymic" class="form-control" />
+        <ValidationMessage For="@(() => entity.Patronymic)" />
+    </div>
+
+    <div class="form-group">
+        <label for="MeasurementUnitSelection">Выберите должность:</label>
+        <select id="MeasurementUnitSelection" class="form-control" @bind:after="MeasurementUnitChanged" @bind="selectedEmployeePositionId">
+            @foreach (var item in employeePositions)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        </select>
+        <ValidationMessage For="@(() => entity.PositionId)" />
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Guid id { get; set; }
+
+    private EmployeeResponseModel entity = new();
+    private EmployeeResponseModelValidator validationRules = new();
+    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    private ICollection<EmployeePositionResponseModel> employeePositions = new List<EmployeePositionResponseModel>();
+
+    private Guid selectedEmployeePositionId = Guid.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        entity = await PurchasingClient.GetEmployeeByIdAsync(id, cancellationTokenSource.Token);
+        employeePositions = await PurchasingClient.GetAllEmployeePositionsAsync(cancellationTokenSource.Token);
+        entity.Position = employeePositions.FirstOrDefault(x => x.Id == entity.PositionId);
+        selectedEmployeePositionId = entity.PositionId;
+    }
+
+    private async Task HandleSubmit()
+    {
+        var validationResult = validationRules.Validate(entity);
+        if (validationResult.IsValid)
+        {
+            await PurchasingClient.UpdateEmployeeAsync(entity, cancellationTokenSource.Token);
+            NavigationManager.NavigateTo("/MainEmployee");
+        }
+    }
+
+    private void MeasurementUnitChanged()
+    {
+        entity.PositionId = selectedEmployeePositionId;
+        entity.Position = employeePositions.FirstOrDefault(m => m.Id == selectedEmployeePositionId);
+    }
+
+    private void Cancel()
+    {
+        NavigationManager.NavigateTo("/MainEmployee");
+    }
+}

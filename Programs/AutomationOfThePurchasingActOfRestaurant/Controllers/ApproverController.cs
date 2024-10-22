@@ -65,6 +65,19 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Controllers
         }
 
         /// <summary>
+        /// Получает список всех утверждающих с их связями
+        /// </summary>
+        [HttpGet("GetAllWithAllLinks")]
+        [ProducesResponseType(typeof(IEnumerable<ApproverResponseModel>), StatusCodes.Status200OK)]
+        [SwaggerOperation(OperationId = "GetAllApproversWithAllLinks")]
+        public async Task<IActionResult> GetAllWithAllLinks(CancellationToken token)
+        {
+            var result = await approverService.GetAllWithAllLinksAsync(token);
+
+            return Ok(mapper.Map<IEnumerable<ApproverResponseModel>>(result));
+        }
+
+        /// <summary>
         /// Получает утверждающего по имени
         /// </summary>
         [HttpGet("byLastName")]

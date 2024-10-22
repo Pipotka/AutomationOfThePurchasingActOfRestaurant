@@ -67,7 +67,6 @@ public class EmployeeService : IEmployeeService
 
         result = mapper.Map<Employee>(source);
         result.Id = Guid.NewGuid();
-        result.PositionId = Guid.NewGuid();
         employeeWriteRepository.Add(result);
         await unitOfWork.SaveChangesAsync(token);
 
@@ -95,6 +94,15 @@ public class EmployeeService : IEmployeeService
     public async Task<List<EmployeeModel>> GetAllAsync(CancellationToken token)
     {
         var result = await employeeReadRepository.GetAllAsync(token);
+        return mapper.Map<List<EmployeeModel>>(result);
+    }
+
+    /// <summary>
+    /// Возвращает всех сотрудников с их связями
+    /// </summary>
+    public async Task<List<EmployeeModel>> GetAllWithLinksAsync(CancellationToken token)
+    {
+        var result = await employeeReadRepository.GetAllWithLinksAsync(token);
         return mapper.Map<List<EmployeeModel>>(result);
     }
 

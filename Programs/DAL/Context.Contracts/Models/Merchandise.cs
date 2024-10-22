@@ -20,9 +20,13 @@ public class Merchandise : IBaseEntity, ISoftDelited
     /// </summary>
     public DateTime DateOfLastChange { get; set; }
     /// <summary>
-    /// Закупочные акты
+    /// <see cref="PurchaseForm"/> Id
     /// </summary>
-    public ICollection<PurchaseForm> PurchaseForms { get; set; } = new List<PurchaseForm>();
+    public Guid? PurchaseFormId { get; set; }
+    /// <summary>
+    /// Закупочный акт
+    /// </summary>
+    public PurchaseForm? PurchaseForm { get; set; }
     /// <summary>
     /// Наименование, характеристика товара
     /// </summary>
@@ -44,9 +48,9 @@ public class Merchandise : IBaseEntity, ISoftDelited
     /// </summary>
     public int Count { get; set; }
     /// <summary>
-    /// Цены
+    /// Цена
     /// </summary>
-    public ICollection<MerchandisePrice> Prices { get; set; } = new List<MerchandisePrice>();
+    public double Price { get; set; } = 0;
     /// <summary>
     /// <inheritdoc cref="ISoftDelited.DateOfDeletion" path="/summary"/>
     /// </summary>

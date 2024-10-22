@@ -31,6 +31,21 @@ public class PurchaseFormReadRepository : IPurchaseFormReadRepository
                  .ToListAsync(token);
 
     /// <summary>
+    /// Получает все закупочные акты с их связями
+    /// </summary>
+    public Task<List<PurchaseForm>> GetAllWithAllLinksAsync(CancellationToken token)
+        => reader.Read<PurchaseForm>()
+        .NotDeleted()
+        .Include(pf => pf.FormKey)
+            .Include(pf => pf.SponsorOrganization)
+            .Include(pf => pf.ApprovingOfficer)
+            .Include(pf => pf.ProcurementSpecialist)
+            .Include(pf => pf.Salesman)
+            .Include(pf => pf.PurchasedMerchandises)
+                 .OrderBy(pf => pf.Id)
+                 .ToListAsync(token);
+
+    /// <summary>
     /// Получает закупочный акт по идентификатору
     /// </summary>
     public Task<PurchaseForm?> GetAsync(Guid id, CancellationToken token)
@@ -49,12 +64,12 @@ public class PurchaseFormReadRepository : IPurchaseFormReadRepository
             .Include(pf => pf.FormKey)
             .Include(pf => pf.SponsorOrganization)
             .Include(pf => pf.ApprovingOfficer)
-            .Include(pf => pf.OfficerSignature)
+                .ThenInclude(a => a.Position)
             .Include(pf => pf.ProcurementSpecialist)
+                .ThenInclude(ps => ps.Position)
             .Include(pf => pf.Salesman)
             .Include(pf => pf.PurchasedMerchandises)
                 .ThenInclude(m => m.MeasurementUnit)
-            .Include(pf => pf.Prices)
             .FirstOrDefaultAsync(token);
 
     /// <summary>

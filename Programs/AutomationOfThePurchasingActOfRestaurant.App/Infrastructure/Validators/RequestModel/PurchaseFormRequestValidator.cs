@@ -25,10 +25,6 @@ public class PurchaseFormRequestValidator : AbstractValidator<PurchaseFormReques
             .NotEqual(Guid.Empty)
             .WithMessage("Утверждающее должностное лицо не указано");
 
-        RuleFor(x => x.OfficerSignatureId)
-            .NotEqual(Guid.Empty)
-            .WithMessage("Подпись утверждающего не указана не указана");
-
         RuleFor(x => x.DocumentNumber)
             .GreaterThan(0)
             .WithMessage("Номер документа должен быть положительным");
@@ -52,9 +48,5 @@ public class PurchaseFormRequestValidator : AbstractValidator<PurchaseFormReques
         RuleFor(x => x.PurchasedMerchandises)
             .NotEmpty()
             .WithMessage("Закупленные товары не указаны");
-
-        RuleFor(x => x.Prices)
-            .NotEmpty()
-            .WithMessage("Цены на товары не указаны");
     }
 }

@@ -31,13 +31,9 @@ public class ApproverBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="Approver.Position" path="/summary"/>
     /// </summary>
-    public EmployeePositionBaseModel Position { get; set; }
+    public EmployeePositionModel Position { get; set; }
     /// <summary>
-    /// <inheritdoc cref="Approver.SignatureId" path="/summary"/>
+    /// <inheritdoc cref="Approver.SignatureDecryption" path="/summary"/>
     /// </summary>
-    public Guid SignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="Approver.Signature" path="/summary"/>
-    /// </summary>
-    public SignatureBaseModel Signature { get; set; }
+    public string SignatureDecryption { get; set; }
 }

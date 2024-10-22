@@ -1,4 +1,5 @@
-﻿using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models.BaseModels;
+﻿using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
+using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models.BaseModels;
 using FluentValidation;
 
 namespace Company.AutomationOfThePurchasingActOfRestaurant.Services.Validators.BaseModelValidators;
@@ -26,8 +27,10 @@ public class ApproverBaseModelValidator : AbstractValidator<ApproverBaseModel>
         RuleFor(x => x.PositionId)
             .NotEqual(Guid.Empty)
             .WithMessage("Должность не указана");
-        RuleFor(x => x.SignatureId)
-            .NotEqual(Guid.Empty)
-            .WithMessage("Подпись не указана");
+        RuleFor(x => x.SignatureDecryption)
+            .NotEmpty()
+            .WithMessage("Необходима расшифровка подписи")
+            .Matches(Approver.RegularExpressionForSignatureDecryption)
+            .WithMessage("Неправильная расшифровка подписи");
     }
 }

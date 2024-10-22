@@ -1,4 +1,5 @@
 ﻿using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
+using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.Contracts.Sorts;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.ReadRepositories;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Tests;
 using FluentAssertions;
@@ -155,6 +156,90 @@ public class PurchaseFormReadRepositoryTests : PurchasingInMemoryContext
 
         // assert
         result.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из закупочных актов по названию по возрастанию
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnOrderedInAscendingOrderValue()
+    {
+        // arrange
+        var purchaseForm1 = GetPurchaseForm(x => x.DocumentNumber = 1);
+        var purchaseForm2 = GetPurchaseForm(x => x.DocumentNumber = 3);
+        var purchaseForm3 = GetPurchaseForm(x => x.DocumentNumber = 2);
+        await PurchasingContext.AddRangeAsync(purchaseForm1, purchaseForm2, purchaseForm3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await purchaseFormReadRepository.GetPageAsync(PurchaseFormSortBy.DocumentNumber, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(3);
+        result[0].Should().BeEquivalentTo(purchaseForm1);
+        result[1].Should().BeEquivalentTo(purchaseForm3);
+        result[2].Should().BeEquivalentTo(purchaseForm2);
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из 2-х закупочных актов по названию по возрастанию
+    /// </summary>spaginated page
+    [Fact]
+    public async Task GetPageShouldReturnPageWithPagination()
+    {
+        // arrange
+        var purchaseForm1 = GetPurchaseForm(x => x.DocumentNumber = 1);
+        var purchaseForm2 = GetPurchaseForm(x => x.DocumentNumber = 3);
+        var purchaseForm3 = GetPurchaseForm(x => x.DocumentNumber = 2);
+        await PurchasingContext.AddRangeAsync(purchaseForm1, purchaseForm2, purchaseForm3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await purchaseFormReadRepository.GetPageAsync(PurchaseFormSortBy.DocumentNumber, 1, 2, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(2);
+        result[0].Should().BeEquivalentTo(purchaseForm1);
+        result[1].Should().BeEquivalentTo(purchaseForm3);
+    }
+
+    /// <summary>
+    /// Возвращает пустую страницу
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnEmpty()
+    {
+        // act
+        var result = await purchaseFormReadRepository.GetPageAsync(PurchaseFormSortBy.DocumentNumber, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из закупочных актов по названию по убыванию
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnOrderedInDescendingOrderValue()
+    {
+        // arrange
+        var purchaseForm1 = GetPurchaseForm(x => x.DocumentNumber = 1);
+        var purchaseForm2 = GetPurchaseForm(x => x.DocumentNumber = 3);
+        var purchaseForm3 = GetPurchaseForm(x => x.DocumentNumber = 2);
+        await PurchasingContext.AddRangeAsync(purchaseForm1, purchaseForm2, purchaseForm3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await purchaseFormReadRepository.GetPageAsync(PurchaseFormSortBy.DocumentNumberDesc, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(3);
+        result[0].Should().BeEquivalentTo(purchaseForm2);
+        result[1].Should().BeEquivalentTo(purchaseForm3);
+        result[2].Should().BeEquivalentTo(purchaseForm1);
     }
 
     /// <summary>

@@ -21,7 +21,7 @@ public class MeasurementUnitModelValidator : AbstractValidator<MeasurementUnitMo
             .WithMessage("Наименование единицы измерения не указано");
 
         RuleFor(x => (int)x.OKEIKey)
-            .InclusiveBetween(1, MeasurementUnit.leightOKEIKey)
+            .InclusiveBetween(1, 999)
             .WithMessage($"Код по ОКЕИ должен быть в диапазоне от 1 до 999");
         RuleFor(x => x.Id)
             .NotEqual(Guid.Empty)

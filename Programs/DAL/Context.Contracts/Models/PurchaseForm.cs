@@ -44,14 +44,6 @@ public class PurchaseForm : IBaseEntity, ISoftDelited
     /// </summary>
     public Approver ApprovingOfficer { get; set; }
     /// <summary>
-    /// <see cref="OfficerSignature"/> Id
-    /// </summary>
-    public Guid OfficerSignatureId { get; set; }
-    /// <summary>
-    /// Подпись <see cref="ApprovingOfficer"/>, которая используется в этом документе
-    /// </summary>
-    public Signature OfficerSignature { get; set; }
-    /// <summary>
     /// Номер документа
     /// </summary>
     public int DocumentNumber { get; set; }
@@ -83,10 +75,6 @@ public class PurchaseForm : IBaseEntity, ISoftDelited
     /// Закупленные товары
     /// </summary>
     public ICollection<Merchandise> PurchasedMerchandises {  get; set; }
-    /// <summary>
-    /// Цены
-    /// </summary>
-    public ICollection<MerchandisePrice> Prices { get; set; }
     /// <summary>
     /// <inheritdoc cref="ISoftDelited.DateOfDeletion" path="/summary"/>
     /// </summary>

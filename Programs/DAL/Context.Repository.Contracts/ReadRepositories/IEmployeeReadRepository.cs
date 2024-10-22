@@ -13,4 +13,8 @@ public interface IEmployeeReadRepository : IReadRepository<Employee>, IGetEntity
     /// Получает сотрудника по фамилии
     /// </summary>
     Task<Employee?> GetByLastNameAsync(string lastName, CancellationToken token);
+    /// <summary>
+    /// Получает список всех сотрудников с их связями
+    /// </summary>
+    Task<List<Employee>> GetAllWithLinksAsync(CancellationToken token);
 }

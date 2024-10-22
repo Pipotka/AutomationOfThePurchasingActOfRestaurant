@@ -1,0 +1,93 @@
+﻿@page "/MainOrganization"
+@using Company.AutomationOfThePurchasingActOfRestaurant.Client
+@inject IPurchasingActOfRestaurantClient PurchasingClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@implements IDisposable
+
+<PageTitle>Главная. Организация</PageTitle>
+<div align="center">
+    <a class="navbar-brand" href="/">PurchasingActOfRestaurants</a>
+</div>
+
+<div>
+    <!-- Кнопка добавить организацию -->
+    <button class="btn btn-primary" @onclick="AddOrganization">
+        <i class="fas fa-plus"></i> Добавить Организацию
+    </button>
+</div>
+<hr size="3" />
+@if (items == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <th>Название</th>
+            <th>Адрес</th>
+            <th>Структурное подразделение</th>
+            <th>Действия</th>
+        </thead>
+        <tbody>
+            @foreach (var item in items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Address</td>
+                    <td>@item.StructuralUnit</td>
+                    <td>
+                        <select class="form-control" @onchange="@(e => HandleActionSelection(e.Value.ToString(), item.Id))">
+                            <option value="">Выберите действие</option>
+                            <option value="Edit">Изменить</option>
+                            <option value="Delete">Удалить</option>
+                        </select>
+                    </td>
+                </tr>
+            }
+    </tbody>
+</table>
+}
+
+@code {
+    private ICollection<OrganizationResponseModel>? items;
+
+    private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = await PurchasingClient.GetAllOrganizationsAsync(cancellationTokenSource.Token);
+    }
+
+    private async Task HandleActionSelection(string action, Guid id)
+    {
+        switch (action)
+        {
+            case "Edit":
+                NavigationManager.NavigateTo($"/MainOrganization/EditOrganization/{id}");
+                break;
+
+            case "Delete":
+                var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите удалить этого поставщика?");
+                if (confirmed)
+                {
+                    await PurchasingClient.DeleteOrganizationAsync(id, cancellationTokenSource.Token);
+                    var item = items.First(i => i.Id == id);
+                    items.Remove(item);
+                }
+                break;
+        }
+    }
+
+    private void AddOrganization()
+    {
+    NavigationManager.NavigateTo("/MainOrganization/CreateOrganization");
+    }
+
+    public void Dispose()
+    {
+    cancellationTokenSource.Cancel();
+    cancellationTokenSource.Dispose();
+    }
+}

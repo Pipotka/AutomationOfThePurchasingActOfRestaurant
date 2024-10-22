@@ -1,4 +1,5 @@
 ﻿using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
+using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.Contracts.Sorts;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.ReadRepositories;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Tests;
 using FluentAssertions;
@@ -155,6 +156,90 @@ public class OrganizationReadRepositoryTests : PurchasingInMemoryContext
 
         // assert
         result.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из организаций по имени по возрастанию
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnOrderedInAscendingOrderValue()
+    {
+        // arrange
+        var оrganization1 = GetOrganization(x => x.Name = "Абрамов");
+        var оrganization2 = GetOrganization(x => x.Name = "Ярисов");
+        var оrganization3 = GetOrganization(x => x.Name = "Кутузов");
+        await PurchasingContext.AddRangeAsync(оrganization1, оrganization2, оrganization3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await оrganizationReadRepository.GetPageAsync(OrganizationSortBy.Name, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(3);
+        result[0].Should().BeEquivalentTo(оrganization1);
+        result[1].Should().BeEquivalentTo(оrganization3);
+        result[2].Should().BeEquivalentTo(оrganization2);
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из 2-х организаций по имени по возрастанию
+    /// </summary>spaginated page
+    [Fact]
+    public async Task GetPageShouldReturnPageWithPagination()
+    {
+        // arrange
+        var оrganization1 = GetOrganization(x => x.Name = "Абрамов");
+        var оrganization2 = GetOrganization(x => x.Name = "Ярисов");
+        var оrganization3 = GetOrganization(x => x.Name = "Кутузов");
+        await PurchasingContext.AddRangeAsync(оrganization1, оrganization2, оrganization3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await оrganizationReadRepository.GetPageAsync(OrganizationSortBy.Name, 1, 2, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(2);
+        result[0].Should().BeEquivalentTo(оrganization1);
+        result[1].Should().BeEquivalentTo(оrganization3);
+    }
+
+    /// <summary>
+    /// Возвращает пустую страницу
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnEmpty()
+    {
+        // act
+        var result = await оrganizationReadRepository.GetPageAsync(OrganizationSortBy.Name, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().BeEmpty();
+    }
+
+    /// <summary>
+    /// Возвращает отсортировынную страницу из организаций по имени по убыванию
+    /// </summary>
+    [Fact]
+    public async Task GetPageShouldReturnOrderedInDescendingOrderValue()
+    {
+        // arrange
+        var оrganization1 = GetOrganization(x => x.Name = "Абрамов");
+        var оrganization2 = GetOrganization(x => x.Name = "Ярисов");
+        var оrganization3 = GetOrganization(x => x.Name = "Кутузов");
+        await PurchasingContext.AddRangeAsync(оrganization1, оrganization2, оrganization3);
+        await PurchasingContext.SaveChangesAsync();
+
+        // act
+        var result = await оrganizationReadRepository.GetPageAsync(OrganizationSortBy.NameDesc, 1, 3, CancellationToken.None);
+
+        // assert
+        result.Should().NotBeEmpty()
+            .And.HaveCount(3);
+        result[0].Should().BeEquivalentTo(оrganization2);
+        result[1].Should().BeEquivalentTo(оrganization3);
+        result[2].Should().BeEquivalentTo(оrganization1);
     }
 
     /// <summary>

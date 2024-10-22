@@ -99,6 +99,15 @@ public class ApproverService : IApproverService
     }
 
     /// <summary>
+    /// Возвращает всех утверждающих с их связями
+    /// </summary>
+    public async Task<List<ApproverModel>> GetAllWithAllLinksAsync(CancellationToken token)
+    {
+        var result = await approverReadRepository.GetAllWithAllLinksAsync(token);
+        return mapper.Map<List<ApproverModel>>(result);
+    }
+
+    /// <summary>
     /// Возвращает утверждающего по Id
     /// </summary>
     public async Task<ApproverModel> GetAsync(Guid id, CancellationToken token)

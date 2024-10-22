@@ -15,7 +15,7 @@ public class PurchaseFormBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.FormKey" path="/summary"/>
     /// </summary>
-    public FormKeyBaseModel FormKey { get; set; }
+    public FormKeyModel FormKey { get; set; }
     /// <summary>
     /// <see cref="SponsorOrganization"/> Id
     /// </summary>
@@ -23,7 +23,7 @@ public class PurchaseFormBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.SponsorOrganization" path="/summary"/>
     /// </summary>
-    public OrganizationBaseModel SponsorOrganization { get; set; }
+    public OrganizationModel SponsorOrganization { get; set; }
     /// <summary>
     /// <see cref="ApprovingOfficer"/> Id
     /// </summary>
@@ -31,15 +31,7 @@ public class PurchaseFormBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.ApprovingOfficer" path="/summary"/>
     /// </summary>
-    public ApproverBaseModel ApprovingOfficer { get; set; }
-    /// <summary>
-    /// <see cref="OfficerSignature"/> Id
-    /// </summary>
-    public Guid OfficerSignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="PurchaseForm.OfficerSignature" path="/summary"/>
-    /// </summary>
-    public SignatureBaseModel OfficerSignature { get; set; }
+    public ApproverModel ApprovingOfficer { get; set; }
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.DocumentNumber" path="/summary"/>
     /// </summary>
@@ -59,7 +51,7 @@ public class PurchaseFormBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.ProcurementSpecialist" path="/summary"/>
     /// </summary>
-    public EmployeeBaseModel ProcurementSpecialist { get; set; }
+    public EmployeeModel ProcurementSpecialist { get; set; }
     /// <summary>
     /// <see cref="Salesman"/> Id
     /// </summary>
@@ -67,13 +59,9 @@ public class PurchaseFormBaseModel : IBaseEntityModel
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.Salesman" path="/summary"/>
     /// </summary>
-    public SupplierBaseModel Salesman { get; set; }
+    public SupplierModel Salesman { get; set; }
     /// <summary>
     /// <inheritdoc cref="PurchaseForm.PurchasedMerchandises" path="/summary"/>
     /// </summary>
-    public ICollection<MerchandiseBaseModel> PurchasedMerchandises { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="PurchaseForm.Prices" path="/summary"/>
-    /// </summary>
-    public ICollection<MerchandisePriceBaseModel> Prices { get; set; }
+    public ICollection<MerchandiseModel> PurchasedMerchandises { get; set; }
 }

@@ -13,4 +13,13 @@ public interface IPurchaseFormService : IBaseEntityService<PurchaseFormModel, Pu
     /// Получает закупочный акт по коду фрмы
     /// </summary>
     Task<PurchaseFormModel?> GetByFormKeyAsync(Guid formKeyId, CancellationToken token);
+
+    /// <summary>
+    /// Возвращает все закупочный акт с их связями
+    /// </summary>
+    Task<List<PurchaseFormModel>> GetAllWithAllLinksAsync(CancellationToken token);
+    /// <summary>
+    /// Возвращает закупочный акт со всеми связями по Id
+    /// </summary>
+    Task<PurchaseFormModel> GetWithAllLinksAsync(Guid id, CancellationToken token);
 }

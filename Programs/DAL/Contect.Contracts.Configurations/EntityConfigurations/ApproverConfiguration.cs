@@ -15,11 +15,6 @@ public class ApproverConfiguration : IEntityTypeConfiguration<Approver>
             .HasForeignKey(p => p.ApprovingOfficerId)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.HasOne(a => a.Signature)
-            .WithOne(s => s.Approver)
-            .HasForeignKey<Approver>(a => a.SignatureId)
-            .OnDelete(DeleteBehavior.NoAction);
-
         builder.HasOne(a => a.Position)
             .WithMany(p => p.Approvers)
             .HasForeignKey(a => a.PositionId)

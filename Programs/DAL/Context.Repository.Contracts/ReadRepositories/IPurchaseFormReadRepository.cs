@@ -18,4 +18,9 @@ public interface IPurchaseFormReadRepository : IReadRepository<PurchaseForm>, IG
     /// Получает закупочный акт со всеми связями
     /// </summary>
     Task<PurchaseForm?> GetWithAllLinksAsync(Guid id, CancellationToken token);
+
+    /// <summary>
+    /// Получает все закупочные акты с их связями
+    /// </summary>
+    Task<List<PurchaseForm>> GetAllWithAllLinksAsync(CancellationToken token);
 }

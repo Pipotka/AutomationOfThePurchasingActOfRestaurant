@@ -1,4 +1,5 @@
 ﻿using Company.AutomationOfThePurchasingActOfRestaurant.Models.CreateModelRequest;
+using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models.BaseModels;
 
 namespace Company.AutomationOfThePurchasingActOfRestaurant.Models;
 
@@ -8,13 +9,13 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Models;
 public class MerchandiseResponseModel
 {
     /// <summary>
+    /// <see cref="PurchaseForm"/> Id
+    /// </summary>
+    public Guid? PurchaseFormId { get; set; }
+    /// <summary>
     /// Id
     /// </summary>
     public Guid Id { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="MerchandiseRequest.PurchaseForms" path="/summary"/>
-    /// </summary>
-    public ICollection<PurchaseFormResponseModel> PurchaseForms { get; set; } = new List<PurchaseFormResponseModel>();
     /// <summary>
     /// <inheritdoc cref="MerchandiseRequest.Name" path="/summary"/>
     /// </summary>
@@ -36,7 +37,7 @@ public class MerchandiseResponseModel
     /// </summary>
     public int Count { get; set; }
     /// <summary>
-    /// <inheritdoc cref="MerchandiseRequest.Prices" path="/summary"/>
+    /// <inheritdoc cref="MerchandiseRequest.Price" path="/summary"/>
     /// </summary>
-    public ICollection<MerchandisePriceResponseModel> Prices { get; set; }
+    public double Price { get; set; } = 0;
 }

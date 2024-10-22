@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 
 namespace Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
 
@@ -7,6 +8,10 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Mod
 /// </summary>
 public class Approver : IBaseEntity, ISoftDelited
 {
+    /// <summary>
+    /// Регулярное выражение для расшифровки подписи
+    /// </summary>
+    public static Regex RegularExpressionForSignatureDecryption = new Regex(@"^[A-ZА-Я]\.([A-ZА-Я]\.)? [A-ZА-Я][a-zа-я]*$");
     /// <summary>
     /// Id
     /// </summary>
@@ -44,13 +49,9 @@ public class Approver : IBaseEntity, ISoftDelited
     /// </summary>
     public EmployeePosition Position { get; set; }
     /// <summary>
-    /// <see cref="Signature"/> Id
+    /// Расшифровка подписи
     /// </summary>
-    public Guid SignatureId { get; set; }
-    /// <summary>
-    /// Графическая подпись
-    /// </summary>
-    public Signature Signature { get; set; }
+    public string SignatureDecryption { get; set; }
     /// <summary>
     /// <inheritdoc cref="ISoftDelited.DateOfDeletion" path="/summary"/>
     /// </summary>

@@ -26,9 +26,11 @@ public class ApproverResponseModelValidator : AbstractValidator<ApproverResponse
         RuleFor(x => x.PositionId)
             .NotEqual(Guid.Empty)
             .WithMessage("Должность не указана");
-        RuleFor(x => x.SignatureId)
-            .NotEqual(Guid.Empty)
-            .WithMessage("Подпись не указана");
+        RuleFor(x => x.SignatureDecryption)
+            .NotEmpty()
+            .WithMessage("Необходима расшифровка подписи")
+            .Matches(@"^[A-ZА-Я]\.([A-ZА-Я]\.)? [A-ZА-Я][a-zа-я]*$")
+            .WithMessage("Неправильная расшифровка подписи");
         RuleFor(x => x.Id)
             .NotEqual(Guid.Empty)
             .WithMessage("Id сущности не указан");

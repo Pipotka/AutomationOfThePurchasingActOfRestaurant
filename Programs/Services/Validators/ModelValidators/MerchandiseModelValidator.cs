@@ -30,6 +30,11 @@ public class MerchandiseModelValidator : AbstractValidator<MerchandiseModel>
         RuleFor(x => x.Count)
             .GreaterThan(0)
             .WithMessage("Количество товара должно быть больше 0");
+
+        RuleFor(x => x.Price)
+            .NotNull()
+            .WithMessage("Цена не указана");
+
         RuleFor(x => x.Id)
             .NotEqual(Guid.Empty)
             .WithMessage("Id сущности не указан");

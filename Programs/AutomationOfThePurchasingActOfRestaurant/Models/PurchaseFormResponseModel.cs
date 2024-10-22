@@ -36,14 +36,6 @@ public class PurchaseFormResponseModel
     /// </summary>
     public ApproverResponseModel ApprovingOfficer { get; set; }
     /// <summary>
-    /// <see cref="OfficerSignature"/> Id
-    /// </summary>
-    public Guid OfficerSignatureId { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="PurchaseFormRequest.OfficerSignature" path="/summary"/>
-    /// </summary>
-    public SignatureResponseModel OfficerSignature { get; set; }
-    /// <summary>
     /// <inheritdoc cref="PurchaseFormRequest.DocumentNumber" path="/summary"/>
     /// </summary>
     public int DocumentNumber { get; set; }
@@ -75,10 +67,6 @@ public class PurchaseFormResponseModel
     /// <inheritdoc cref="PurchaseFormRequest.PurchasedMerchandises" path="/summary"/>
     /// </summary>
     public ICollection<MerchandiseResponseModel> PurchasedMerchandises { get; set; }
-    /// <summary>
-    /// <inheritdoc cref="PurchaseFormRequest.Prices" path="/summary"/>
-    /// </summary>
-    public ICollection<MerchandisePriceResponseModel> Prices { get; set; }
     /// <summary>
     /// Полная стоимость товаров
     /// </summary>

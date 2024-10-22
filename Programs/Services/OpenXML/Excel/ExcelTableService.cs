@@ -3,9 +3,7 @@ using Company.AutomationOfThePurchasingActOfRestaurant.Context.Repository.Contra
 using Company.AutomationOfThePurchasingActOfRestaurant.OpenXML.Excel.ComfortableOperations.Interfaces;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Exceptions;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServices.OpenXML.Excel;
-using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.IServices.Utilities;
 using Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models;
-using Company.AutomationOfThePurchasingActOfRestaurant.Services.Utilities.Image;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Office2016.Excel;
 using DocumentFormat.OpenXml.Packaging;
@@ -28,7 +26,6 @@ public class ExcelTableService : IExcelTableService
     private readonly IExcelDocumentOperations documentOperations;
     private readonly IExcelSheetOperations sheetOperations;
     private readonly IPurchaseFormReadRepository purchaseFormReadRepository;
-    private readonly IImageCreatorService imageCreatorService;
 
     /// <summary>
     /// Конструктор <see cref="ExcelTableService"/>
@@ -37,15 +34,13 @@ public class ExcelTableService : IExcelTableService
         , IExcelCellOperations cellOperations
         , IExcelDocumentOperations documentOperations
         , IExcelSheetOperations sheetOperations
-        , IPurchaseFormReadRepository purchaseFormReadRepository,
-        IImageCreatorService imageCreatorService)
+        , IPurchaseFormReadRepository purchaseFormReadRepository)
     {
         this.formattingOperations = formattingOperations;
         this.cellOperations = cellOperations;
         this.documentOperations = documentOperations;
         this.sheetOperations = sheetOperations;
         this.purchaseFormReadRepository = purchaseFormReadRepository;
-        this.imageCreatorService = imageCreatorService;
     }
 
     /// <summary>
@@ -57,11 +52,11 @@ public class ExcelTableService : IExcelTableService
     /// <param name="purchaseFormId">
     /// Id закупочного акта, который нужно экспартировать в Excel таблицу
     /// </param>
-    public async Task ExportPurchasingFormInTableAsync(MemoryStream memoryStream,
-        Guid purchaseFormId,
+    public async Task<Stream> ExportPurchasingFormInTableAsync(Guid purchaseFormId,
         CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
+        var memoryStream = new MemoryStream();
 
         var purchaseForm = await purchaseFormReadRepository.GetWithAllLinksAsync(purchaseFormId, token);
         if (purchaseForm == null)
@@ -227,7 +222,7 @@ public class ExcelTableService : IExcelTableService
                 var cell3 = cellOperations.MergeCells(sheet, "K22:M22");
                 formattingOperations.ApplyCellFormat(cell3, StyleUnderlinedIndex);
                 cellOperations.InsertDataIntoCell(cell3, 
-                    purchaseForm.ApprovingOfficer.Signature.SignatureDecryption);
+                    purchaseForm.ApprovingOfficer.SignatureDecryption);
 
                 var summaryCell2 = cellOperations.MergeCells(sheet, "K23:M23");
                 formattingOperations.ApplyCellFormat(summaryCell2, summaryStyleIndex);
@@ -235,17 +230,6 @@ public class ExcelTableService : IExcelTableService
 
                 var G22 = cellOperations.MergeCells(sheet, "G22:I22");
                 formattingOperations.ApplyCellFormat(G22, StyleUnderlinedIndex);
-                var image = await imageCreatorService
-                    .CreateSingatireBmpImage(purchaseForm.ApprovingOfficer.Signature,
-                    true, 
-                    token);
-                sheetOperations.InsertImageInList(sheet,
-                    image,
-                    "Signature",
-                    1U,
-                    "F19", "H23",
-                    (0U, 0U), (0U, 0U),
-                    300, 200);
 
                 var summaryCell3 = cellOperations.MergeCells(sheet, "G23:I23");
                 formattingOperations.ApplyCellFormat(summaryCell3, summaryStyleIndex);
@@ -449,14 +433,11 @@ public class ExcelTableService : IExcelTableService
                 cellOperations.InsertDataIntoCell(cell5, merchendise.Count.ToString());
 
                 var cell6 = cellOperations.MergeCells(sheet, $"J{row}:K{row}");
-                var price = purchaseForm.Prices
-                    .Where(p => p.MerchandiseId == merchendise.Id).FirstOrDefault();
+                var price = merchendise.Price;
                 formattingOperations.ApplyCellFormat(cell6, StyleUnderlinedIndex);
-                cellOperations
-                    .InsertDataIntoCell(cell6,
-                    price.CostPerUnit.ToString());
+                cellOperations.InsertDataIntoCell(cell6, price.ToString());
 
-                var cost = merchendise.Count * price.CostPerUnit;
+                var cost = merchendise.Count * price;
                 totalCost += cost;
                 var cell7 = cellOperations.MergeCells(sheet, $"L{row}:M{row}");
                 formattingOperations.ApplyCellFormat(cell7, StyleUnderlinedIndex);
@@ -465,19 +446,22 @@ public class ExcelTableService : IExcelTableService
             }
             token.ThrowIfCancellationRequested();
 
-            var K52 = sheetOperations.FindOrCreateCell(sheet, $"K{row}");
-            formattingOperations.ApplyCellFormat(K52, Style1Index);
-            cellOperations.InsertDataIntoCell(K52, "Итого");
+            var KTotal = sheetOperations.FindOrCreateCell(sheet, $"K{row}");
+            formattingOperations.ApplyCellFormat(KTotal, Style1Index);
+            cellOperations.InsertDataIntoCell(KTotal, "Итого");
 
             token.ThrowIfCancellationRequested();
 
-            var L52 = sheetOperations.FindOrCreateCell(sheet, $"L{row}:M{row}");
-            formattingOperations.ApplyCellFormat(L52, StyleUnderlinedIndex);
-            cellOperations.InsertDataIntoCell(L52, totalCost.ToString());
+            var LTotalPrice = cellOperations.MergeCells(sheet, $"L{row}:M{row}");
+            formattingOperations.ApplyCellFormat(LTotalPrice, StyleUnderlinedIndex);
+            cellOperations.InsertDataIntoCell(LTotalPrice, totalCost.ToString());
 
+            documentOperations.SaveFile(document);
             token.ThrowIfCancellationRequested();
         }
 
         token.ThrowIfCancellationRequested();
+
+        return memoryStream;
     }
 }

@@ -15,11 +15,9 @@ public static class PurchaseFormModelExtension
     public static double GetTotalCost(this PurchaseFormModel purchaseFormModel)
     {
         var totalCost = 0.0;
-        MerchandisePriceModel merchandisePrice;
-        foreach (MerchandiseModel merchandise in purchaseFormModel.PurchasedMerchandises)
+        foreach (var merchandise in purchaseFormModel.PurchasedMerchandises)
         {
-            merchandisePrice = purchaseFormModel.Prices.FirstOrDefault(mp => mp.MerchandiseId == merchandise.Id);
-            totalCost += merchandisePrice.CostPerUnit * merchandise.Count;
+            totalCost += merchandise.Price * merchandise.Count;
         }
         return totalCost;
     }
