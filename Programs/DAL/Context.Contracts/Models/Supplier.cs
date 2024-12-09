@@ -11,6 +11,7 @@ public class Supplier : IBaseEntity, ISoftDelited
     /// Id
     /// </summary>
     public Guid Id { get; set; }
+
     /// <summary>
     /// Дата создания
     /// </summary>

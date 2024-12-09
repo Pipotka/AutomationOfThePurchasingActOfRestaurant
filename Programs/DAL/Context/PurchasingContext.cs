@@ -1,17 +1,19 @@
 ﻿using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts;
 using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Configurations;
-using Company.AutomationOfThePurchasingActOfRestaurant.Context.Contracts.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
-using System.Reflection.PortableExecutable;
+
 namespace Company.AutomationOfThePurchasingActOfRestaurant.Context
 {
+    /// <summary>
+    /// Контекст БД
+    /// </summary>
     public class PurchasingContext : DbContext, IDbReader, IDbWriter, IUnitOfWork
     {
-        
-
+        /// <summary>
+        /// 
+        /// </summary>
         public PurchasingContext(DbContextOptions<PurchasingContext> options)
-            : base(options) 
+            : base(options)
         {
         }
 
@@ -21,7 +23,7 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Context
             base.OnModelCreating(modelBuilder);
         }
 
-        IQueryable<TEntity> IDbReader.Read<TEntity>() 
+        IQueryable<TEntity> IDbReader.Read<TEntity>()
             => base.Set<TEntity>()
             .AsNoTracking().AsQueryable();
 

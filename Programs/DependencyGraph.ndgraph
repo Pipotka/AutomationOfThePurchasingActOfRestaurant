@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<NDependGraph>
+  <Description><![CDATA[]]></Description>
+  <Actions>
+    <DefaultGraphAction />
+    <NodeSelectedAction Selected="Yes">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="C" N="Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models.*" AN="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="N" N="Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Exceptions" AN="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <ExpandNodeAction>
+      <Settings GroupBy="A|NT|T|PE|AC|EC" Filter="TP" BoxSize="NbLoc" LayoutDir="L2R" ShowEdge="Yes" Highlight="Indirect" />
+      <Node K="T" H="F4C46CCC17C25468" N="PurchasingActOfRestaurantClient+&lt;GetPurchaseFormWithAllLinksByIdAsync&gt;d__120" />
+    </ExpandNodeAction>
+    <CollapseNodeAction>
+      <Settings GroupBy="A|NT|T|PE|AC|EC" Filter="TP" BoxSize="NbLoc" LayoutDir="L2R" ShowEdge="Yes" Highlight="Indirect" />
+      <Node K="T" H="F4C46CCC17C25468" N="PurchasingActOfRestaurantClient+&lt;GetPurchaseFormWithAllLinksByIdAsync&gt;d__120" />
+    </CollapseNodeAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="A" N="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="C" N="Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Models.*" AN="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <EdgeSelectedAction SourceStateBefore="No" TargetStateBefore="No">
+      <Nodes>
+        <Node K="T" H="B2630A75E4A376F3" N="PurchasingEntityNotFoundByIdServiceExeption&lt;TEntity&gt;" />
+        <Node K="T" H="1EDD27C3A58ED441" N="EntityServiceException" />
+      </Nodes>
+    </EdgeSelectedAction>
+    <EdgeSelectedAction SourceStateBefore="No" TargetStateBefore="Yes">
+      <Nodes>
+        <Node K="T" H="26FFF1707B71E2AE" N="InvalidOperationPurchasingEntityServiceException" />
+        <Node K="T" H="1EDD27C3A58ED441" N="EntityServiceException" />
+      </Nodes>
+    </EdgeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="N" N="Company.AutomationOfThePurchasingActOfRestaurant.Services.Contracts.Exceptions" AN="AutomationOfThePurchasingActOfRestaurant.Services.Contracts" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="T" H="97F7684F485B60AB" N="EntityNotFoundServiceExeption" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="97F7684F485B60AB" N="EntityNotFoundServiceExeption" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="T" H="BD96472472D5C2F8" N="PirchasingValidationExeption" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="T" H="3015D622AD13A19A" N="PurchasingEntityNotFoundByRelatedEntityServiceExeption&lt;TEntity,TRelatedEntity&gt;" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="1EDD27C3A58ED441" N="EntityServiceException" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="BD96472472D5C2F8" N="PirchasingValidationExeption" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="26FFF1707B71E2AE" N="InvalidOperationPurchasingEntityServiceException" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="3015D622AD13A19A" N="PurchasingEntityNotFoundByRelatedEntityServiceExeption&lt;TEntity,TRelatedEntity&gt;" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="B2630A75E4A376F3" N="PurchasingEntityNotFoundByIdServiceExeption&lt;TEntity&gt;" />
+    </NodeSelectedAction>
+    <EdgeSelectedAction SourceStateBefore="No" TargetStateBefore="No">
+      <Nodes>
+        <Node K="T" H="239EB33533B17693" N="Employee" />
+        <Node K="T" H="185C1C9B936B5331" N="EmployeePosition" />
+      </Nodes>
+    </EdgeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="185C1C9B936B5331" N="EmployeePosition" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="239EB33533B17693" N="Employee" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="T" H="185C1C9B936B5331" N="EmployeePosition" />
+    </NodeSelectedAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="185C1C9B936B5331" N="EmployeePosition" />
+    </NodeSelectedAction>
+    <ExpandNodeAction>
+      <Settings GroupBy="A|NT|T|PE|AC|EC" Filter="TP" BoxSize="NbLoc" LayoutDir="L2R" ShowEdge="Yes" Highlight="Indirect" />
+      <Node K="T" H="A30209AFA2F69C47" N="SupplierRequest" />
+    </ExpandNodeAction>
+    <NodeSelectedAction Selected="Yes">
+      <Node K="T" H="A30209AFA2F69C47" N="SupplierRequest" />
+    </NodeSelectedAction>
+    <CollapseNodeAction>
+      <Settings GroupBy="A|NT|T|PE|AC|EC" Filter="TP" BoxSize="NbLoc" LayoutDir="L2R" ShowEdge="Yes" Highlight="Indirect" />
+      <Node K="T" H="A30209AFA2F69C47" N="SupplierRequest" />
+    </CollapseNodeAction>
+    <NodeSelectedAction Selected="No">
+      <Node K="T" H="A30209AFA2F69C47" N="SupplierRequest" />
+    </NodeSelectedAction>
+  </Actions>
+</NDependGraph>

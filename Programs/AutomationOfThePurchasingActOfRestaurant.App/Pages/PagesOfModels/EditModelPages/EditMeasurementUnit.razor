@@ -15,13 +15,17 @@
 
     <div class="form-group">
         <label for="Name">Название:</label>
-        <InputNumber id="Name" @bind-Value="entity.Name" class="form-control" />
+        <InputText id="Name" @bind-Value="entity.Name" class="form-control" />
         <ValidationMessage For="@(() => entity.Name)" />
     </div>
     <div class="form-group">
         <label for="OkeiKey">Код по ОКЕИ:</label>
-        <InputNumber id="OkeiKey" @bind-Value="entity.OkeiKey" class="form-control" />
+        <InputText id="OkeiKey" @bind-Value="entity.OkeiKey" class="form-control" />
         <ValidationMessage For="@(() => entity.OkeiKey)" />
+    </div>
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
     </div>
 </EditForm>
 
