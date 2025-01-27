@@ -15,12 +15,12 @@
 
     <div class="form-group">
         <label for="Name">Название:</label>
-        <InputNumber id="Name" @bind-Value="entity.Name" class="form-control" />
+        <InputText id="Name" @bind-Value="entity.Name" class="form-control" />
         <ValidationMessage For="@(() => entity.Name)" />
     </div>
 
     <div class="d-flex justify-content-end">
-        <button type="submit" class="btn btn-success">Добавить</button>
+        <button type="submit" class="btn btn-success">Сохранить</button>
         <button type="button" class="btn btn-danger" @onclick="Cancel">Отмена</button>
     </div>
 </EditForm>

@@ -16,6 +16,8 @@ namespace Company.AutomationOfThePurchasingActOfRestaurant.Services.ModelService
 /// </summary>
 public class PurchaseFormService : IPurchaseFormService
 {
+    private readonly IMerchandiseReadRepository merchandiseReadRepository;
+    private readonly IMerchandiseWriteRepository merchandiseWriteRepository;
     private readonly IPurchaseFormReadRepository purchaseFormReadRepository;
     private readonly IPurchaseFormWriteRepository purchaseFormWriteRepository;
     private readonly IUnitOfWork unitOfWork;
@@ -24,7 +26,9 @@ public class PurchaseFormService : IPurchaseFormService
     /// <summary>
     /// Конструктор <see cref="PurchaseFormService"/>
     /// </summary>
-    public PurchaseFormService(IPurchaseFormReadRepository purchaseFormReadRepository
+    public PurchaseFormService(IMerchandiseWriteRepository merchandiseWriteRepository
+        , IMerchandiseReadRepository merchandiseReadRepository
+        , IPurchaseFormReadRepository purchaseFormReadRepository
         , IPurchaseFormWriteRepository purchaseFormWriteRepository
         , IUnitOfWork unitOfWork
         , IMapper mapper)
@@ -33,6 +37,8 @@ public class PurchaseFormService : IPurchaseFormService
         this.purchaseFormWriteRepository = purchaseFormWriteRepository;
         this.purchaseFormReadRepository = purchaseFormReadRepository;
         this.mapper = mapper;
+        this.merchandiseWriteRepository = merchandiseWriteRepository;
+        this.merchandiseReadRepository = merchandiseReadRepository;
     }
 
     /// <summary>
@@ -82,6 +88,13 @@ public class PurchaseFormService : IPurchaseFormService
         var result = await purchaseFormReadRepository.GetAsync(id, token);
         if (result != null)
         {
+            var mirchendises = await merchandiseReadRepository.GetAllWithLinksAsync(token);
+            foreach (var item in mirchendises.Where(x => x.PurchaseFormId == result.FormKeyId))
+            {
+                item.PurchaseForm = null;
+                item.PurchaseFormId = Guid.Empty;
+                merchandiseWriteRepository.Update(item);
+            }
             purchaseFormWriteRepository.Delete(result);
             await unitOfWork.SaveChangesAsync(token);
             return;
