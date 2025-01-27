@@ -80,7 +80,7 @@ erDiagram
         string firstName
         string lastName
         string patronymic
-        string? jsonSignature
+        string jsonSignature
     }
 
     EmployeePositions{
@@ -100,7 +100,6 @@ erDiagram
     }
 ```
 guid - уникальный идентификатор
-? - атрибут, который может быть NULL
 
 ## Роли пользователей
 |   Роль    |                               Права                                     |
