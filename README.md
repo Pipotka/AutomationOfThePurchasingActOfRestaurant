@@ -30,6 +30,7 @@ erDiagram
         string OKDP
     }
 
+    Suppliers ||--o{ SupplierMerchandises : is
     Suppliers{
         guid id PK
         string firstName
@@ -41,7 +42,7 @@ erDiagram
 
     SupplierMerchandises{
         guid supplierId PK,FK
-        guid Merchandises PK,FK
+        guid merchandiseId PK,FK
         double price
     }
 
